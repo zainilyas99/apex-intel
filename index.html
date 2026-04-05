@@ -200,15 +200,6 @@ html, body {
 
 .auth-security-note span { font-size: 11px; color: var(--emerald); }
 
-.tfa-grid { display: flex; gap: 6px; justify-content: center; }
-.tfa-input {
-  width: 0; flex: 1 1 0; min-width: 0; max-width: 52px; text-align: center;
-  background: var(--navy-3); border: 1px solid var(--border);
-  color: var(--gold-light); font-family: 'DM Mono', monospace;
-  font-size: 18px; padding: 10px 2px; outline: none; box-sizing: border-box;
-  transition: border-color 0.2s;
-}
-.tfa-input:focus { border-color: var(--gold-dim); }
 
 /* ── APP LAYOUT ── */
 #app {
@@ -1188,11 +1179,6 @@ tbody tr:last-child td { border-bottom: none; }
 .notif-text { font-size: 12px; color: var(--text-bright); margin-bottom: 3px; }
 .notif-time { font-size: 10px; color: var(--text-dim); font-family: 'DM Mono', monospace; }
 
-/* ── TWO-FACTOR AUTH VIEW ── */
-#tfa-view { display: none; }
-#tfa-view.active { display: block; }
-#login-view.hidden { display: none; }
-
 /* ── SETTINGS ── */
 .settings-layout {
   display: grid;
@@ -1387,32 +1373,7 @@ tbody tr:last-child td { border-bottom: none; }
           <span style="font-size:12px;color:var(--gold);cursor:pointer;">Forgot password?</span>
         </div>
 
-        <button class="btn-auth" onclick="proceedToTFA()">Continue to Verification →</button>
-      </div>
-
-      <!-- 2FA View -->
-      <div id="tfa-view">
-        <div style="text-align:center;margin-bottom:24px;">
-          <div style="font-size:32px;margin-bottom:12px;">🔐</div>
-          <div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--cream);margin-bottom:6px;">Two-Factor Authentication</div>
-          <div style="font-size:12px;color:var(--text-dim);">Enter the 6-digit code from your authenticator app or SMS</div>
-        </div>
-
-        <div class="tfa-grid" style="margin-bottom:24px;">
-          <input class="tfa-input" maxlength="1" oninput="tfa_next(this,0)">
-          <input class="tfa-input" maxlength="1" oninput="tfa_next(this,1)">
-          <input class="tfa-input" maxlength="1" oninput="tfa_next(this,2)">
-          <input class="tfa-input" maxlength="1" oninput="tfa_next(this,3)">
-          <input class="tfa-input" maxlength="1" oninput="tfa_next(this,4)">
-          <input class="tfa-input" maxlength="1" oninput="tfa_next(this,5)">
-        </div>
-
-        <button class="btn-auth" onclick="doLogin()">Verify & Sign In →</button>
-
-        <div style="text-align:center;margin-top:16px;">
-          <span style="font-size:12px;color:var(--text-dim);">Didn't receive code?&nbsp;</span>
-          <span style="font-size:12px;color:var(--gold);cursor:pointer;">Resend (0:45)</span>
-        </div>
+        <button class="btn-auth" onclick="doLogin()">Sign In →</button>
       </div>
 
       <div class="auth-security-note">
@@ -3524,19 +3485,6 @@ function togglePw() {
   inp.type = inp.type === 'password' ? 'text' : 'password';
 }
 
-function proceedToTFA() {
-  document.getElementById('login-view').style.display = 'none';
-  document.getElementById('tfa-view').style.display = 'block';
-  setTimeout(() => document.querySelector('.tfa-input').focus(), 100);
-}
-
-function tfa_next(el, idx) {
-  if (el.value.length === 1) {
-    const inputs = document.querySelectorAll('.tfa-input');
-    if (idx < 5) inputs[idx + 1].focus();
-    else doLogin();
-  }
-}
 
 async function doLogin() {
   const email = document.getElementById('login-email').value;
