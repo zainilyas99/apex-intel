@@ -1362,7 +1362,7 @@ tbody tr:last-child td { border-bottom: none; }
         <div class="form-group">
           <label class="form-label">Password</label>
           <div class="form-input-row">
-            <input class="form-input" type="password" placeholder="Enter password" id="login-pw" value="ApexDemo2025!" style="flex:1;">
+            <input class="form-input" type="password" placeholder="Enter password" id="login-pw" style="flex:1;">
             <button class="btn btn-secondary btn-sm" style="flex-shrink:0;" id="togglePwBtn" onclick="togglePw()">👁</button>
           </div>
         </div>
@@ -3467,7 +3467,7 @@ tbody tr:last-child td { border-bottom: none; }
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ═══ SUPABASE ═══
-const supabase = window.supabase.createClient(
+const apexDB = window.supabase.createClient(
   'https://zgaupmccyoqyveqwiamt.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnYXVwbWNjeW9xeXZlcXdpYW10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNjg0OTAsImV4cCI6MjA5MDk0NDQ5MH0.DL4Gele-ET6kz1W-jyInxdqE2AFaGdViR_Knxnr_8Fw'
 )
@@ -3490,9 +3490,10 @@ function togglePw() {
 
 
 async function doLogin() {
-  const email = document.getElementById('login-email').value;
+  const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-pw').value;
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (!email || !password) { showToast('Please enter your email and password', 'error'); return; }
+  const { data, error } = await apexDB.auth.signInWithPassword({ email, password });
   if (error) { showToast('Invalid email or password', 'error'); return; }
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app').classList.add('visible');
