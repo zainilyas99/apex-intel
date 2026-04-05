@@ -173,7 +173,8 @@ html, body {
 .form-input:focus { border-color: var(--gold-dim); }
 .form-input::placeholder { color: var(--text-dim); }
 
-.form-input-row { display: flex; gap: 8px; }
+.form-input-row { display: flex; gap: 8px; align-items: center; }
+.form-input-row .form-input { width: auto; flex: 1; min-width: 0; }
 
 .btn-auth {
   width: 100%;
@@ -3482,7 +3483,9 @@ function selectRole(btn, role) {
 
 function togglePw() {
   const inp = document.getElementById('login-pw');
+  const btn = document.getElementById('togglePwBtn');
   inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '\u{1F441}' : '\u{1F441}\u{200D}\u{1F5E8}';
 }
 
 
