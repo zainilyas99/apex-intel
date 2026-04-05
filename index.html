@@ -1,0 +1,3877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APEX Intelligence — Property AI Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --navy: #111111;
+  --navy-2: #191919;
+  --navy-3: #212121;
+  --navy-4: #2A2A2A;
+  --navy-5: #343434;
+  --gold: #9B8B72;
+  --gold-light: #B8A890;
+  --gold-dim: #5C4E3C;
+  --gold-glow: rgba(155,139,114,0.10);
+  --cream: #EDEAE5;
+  --text: #929292;
+  --text-dim: #5E5E5E;
+  --text-bright: #C4C4C4;
+  --emerald: #3BAD88;
+  --emerald-dim: rgba(59,173,136,0.14);
+  --rose: #C4606A;
+  --rose-dim: rgba(196,96,106,0.14);
+  --sapphire: #6B9FD4;
+  --sapphire-dim: rgba(107,159,212,0.14);
+  --amber: #C4922A;
+  --amber-dim: rgba(196,146,42,0.14);
+  --border: rgba(255,255,255,0.07);
+  --border-gold: rgba(155,139,114,0.18);
+  --sidebar-w: 260px;
+  --header-h: 64px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--navy);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--navy-5); border-radius: 2px; }
+
+/* ── AUTH SCREEN ── */
+#auth-screen {
+  position: fixed; inset: 0; z-index: 1000;
+  background: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+
+.auth-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 50%, rgba(155,139,114,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 30%, rgba(155,139,114,0.03) 0%, transparent 60%);
+}
+
+.auth-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.auth-panel {
+  position: relative; z-index: 2;
+  width: 460px;
+  background: var(--navy-2);
+  border: 1px solid var(--border-gold);
+  padding: 0;
+  box-shadow: 0 40px 120px rgba(0,0,0,0.5), 0 0 0 1px rgba(155,139,114,0.05);
+  animation: panelIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-header {
+  padding: 40px 40px 32px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.auth-logo {
+  display: inline-flex; align-items: center; gap: 10px;
+  margin-bottom: 24px;
+}
+
+.auth-logo-mark {
+  width: 40px; height: 40px;
+  border: 1px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; color: var(--gold);
+}
+
+.auth-logo-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; color: var(--cream);
+  letter-spacing: 0.05em;
+}
+
+.auth-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-weight: 400;
+  color: var(--cream); margin-bottom: 6px;
+}
+
+.auth-subtitle { font-size: 13px; color: var(--text-dim); }
+
+.auth-body { padding: 32px 40px 40px; }
+
+.auth-role-selector {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px; margin-bottom: 28px;
+}
+
+.role-btn {
+  padding: 10px 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.role-btn.active {
+  border-color: var(--gold-dim);
+  background: var(--gold-glow);
+  color: var(--gold-light);
+}
+
+.form-group { margin-bottom: 20px; }
+
+.form-label {
+  display: block;
+  font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  background: var(--navy-3);
+  border: 1px solid var(--border);
+  color: var(--text-bright);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus { border-color: var(--gold-dim); }
+.form-input::placeholder { color: var(--text-dim); }
+
+.form-input-row { display: flex; gap: 8px; }
+
+.btn-auth {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: var(--navy);
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 8px;
+}
+
+.btn-auth:hover { background: var(--gold-light); }
+
+.auth-security-note {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 20px; padding: 12px 16px;
+  background: rgba(29,191,138,0.06);
+  border: 1px solid rgba(29,191,138,0.15);
+}
+
+.auth-security-note span { font-size: 11px; color: var(--emerald); }
+
+.tfa-grid { display: flex; gap: 6px; justify-content: center; }
+.tfa-input {
+  width: 0; flex: 1 1 0; min-width: 0; max-width: 52px; text-align: center;
+  background: var(--navy-3); border: 1px solid var(--border);
+  color: var(--gold-light); font-family: 'DM Mono', monospace;
+  font-size: 18px; padding: 10px 2px; outline: none; box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.tfa-input:focus { border-color: var(--gold-dim); }
+
+/* ── APP LAYOUT ── */
+#app {
+  display: none;
+  height: 100vh;
+  flex-direction: column;
+}
+
+#app.visible { display: flex; }
+
+.app-header {
+  height: var(--header-h);
+  background: var(--navy-2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 24px;
+  gap: 20px;
+  flex-shrink: 0;
+  position: relative; z-index: 100;
+}
+
+.header-logo {
+  display: flex; align-items: center; gap: 10px;
+  margin-right: auto;
+}
+
+.header-logo-mark {
+  width: 32px; height: 32px;
+  border: 1px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 14px; color: var(--gold);
+}
+
+.header-logo-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px; color: var(--cream);
+}
+
+.header-logo-env {
+  font-size: 10px; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--text-dim);
+}
+
+.header-search {
+  flex: 1; max-width: 380px;
+  background: var(--navy-3);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px;
+}
+
+.header-search input {
+  background: transparent; border: none; outline: none;
+  color: var(--text-bright); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; flex: 1;
+}
+
+.header-search input::placeholder { color: var(--text-dim); }
+
+.header-actions { display: flex; align-items: center; gap: 12px; }
+
+.h-action {
+  width: 36px; height: 36px;
+  border: 1px solid var(--border);
+  background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-dim);
+  font-size: 15px; transition: all 0.2s; position: relative;
+}
+.h-action:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+.notif-badge {
+  position: absolute; top: -3px; right: -3px;
+  width: 14px; height: 14px;
+  background: var(--rose); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; color: white; font-weight: 600;
+}
+
+.header-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 12px 6px 6px;
+  border: 1px solid var(--border);
+  cursor: pointer; transition: border-color 0.2s;
+}
+.header-user:hover { border-color: var(--gold-dim); }
+
+.user-avatar {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--navy);
+}
+
+.user-info { line-height: 1.3; }
+.user-name { font-size: 12px; font-weight: 500; color: var(--text-bright); }
+.user-role { font-size: 10px; color: var(--text-dim); }
+
+.security-indicator {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  background: rgba(29,191,138,0.06);
+  border: 1px solid rgba(29,191,138,0.2);
+}
+.sec-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--emerald); animation: pulse 2s infinite; }
+.sec-text { font-size: 10px; color: var(--emerald); letter-spacing: 0.1em; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── BODY LAYOUT ── */
+.app-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--navy-2);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto; flex-shrink: 0;
+}
+
+.sidebar-section { padding: 20px 0 8px; }
+
+.sidebar-section-label {
+  padding: 0 20px 8px;
+  font-size: 9px; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--text-dim);
+  font-weight: 500;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  color: var(--text-dim);
+  font-size: 13px; font-weight: 400;
+  position: relative;
+}
+
+.nav-item:hover { color: var(--text-bright); background: rgba(255,255,255,0.02); }
+
+.nav-item.active {
+  color: var(--gold-light);
+  background: var(--gold-glow);
+  border-left-color: var(--gold);
+}
+
+.nav-icon { width: 18px; text-align: center; font-size: 14px; flex-shrink: 0; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--rose);
+  color: white; font-size: 9px; font-weight: 700;
+  padding: 1px 6px; border-radius: 10px;
+}
+
+.nav-badge.gold { background: var(--gold-dim); color: var(--gold-light); }
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.agent-status-card {
+  background: var(--navy-3);
+  border: 1px solid var(--border);
+  padding: 14px;
+}
+
+.agent-status-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.agent-status-name { font-size: 12px; color: var(--text-bright); font-weight: 500; }
+.status-online {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10px; color: var(--emerald);
+}
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--emerald); }
+
+.agent-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.agent-metric { text-align: center; }
+.agent-metric-val { font-size: 16px; font-family: 'Playfair Display', serif; color: var(--gold-light); }
+.agent-metric-label { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  flex: 1; overflow-y: auto;
+  padding: 32px;
+  position: relative;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.page-title-group { }
+.page-eyebrow {
+  font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 6px;
+}
+.page-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px; font-weight: 400; color: var(--cream);
+  line-height: 1.2;
+}
+.page-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+
+.page-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; border: none; transition: all 0.2s;
+  letter-spacing: 0.03em;
+}
+
+.btn-primary { background: var(--gold); color: var(--navy); }
+.btn-primary:hover { background: var(--gold-light); }
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+.btn-secondary:hover { border-color: var(--gold-dim); color: var(--gold-light); }
+
+.btn-ghost {
+  background: transparent; border: none;
+  color: var(--text-dim); padding: 8px 12px;
+}
+.btn-ghost:hover { color: var(--text-bright); }
+
+.btn-danger { background: var(--rose-dim); color: var(--rose); border: 1px solid rgba(224,92,106,0.3); }
+
+.btn-sm { padding: 6px 12px; font-size: 11px; }
+.btn-icon { padding: 8px; }
+
+/* ── KPI CARDS ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-bottom: 28px;
+}
+
+.kpi-card {
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+  padding: 22px 24px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.2s;
+}
+.kpi-card:hover { border-color: var(--border-gold); }
+
+.kpi-card::after {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: var(--gold);
+  opacity: 0; transition: opacity 0.2s;
+}
+.kpi-card:hover::after { opacity: 1; }
+
+.kpi-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.kpi-label {
+  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.kpi-icon {
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.kpi-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 34px; font-weight: 400;
+  color: var(--cream); line-height: 1;
+  margin-bottom: 8px;
+}
+
+.kpi-delta {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px;
+}
+
+.kpi-delta.up { color: var(--emerald); }
+.kpi-delta.down { color: var(--rose); }
+
+/* ── CHARTS ROW ── */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 0.6fr;
+  gap: 16px; margin-bottom: 28px;
+}
+
+.chart-card {
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+  padding: 24px;
+}
+
+.chart-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px;
+}
+
+.chart-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px; color: var(--cream);
+}
+
+.chart-period {
+  display: flex; gap: 4px;
+}
+
+.period-btn {
+  padding: 4px 10px;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 10px;
+  cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Mono', monospace;
+}
+.period-btn.active { background: var(--gold-glow); border-color: var(--gold-dim); color: var(--gold-light); }
+
+.chart-canvas-wrap { position: relative; height: 200px; }
+
+/* ── DATA TABLE ── */
+.data-table-wrap {
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+
+.table-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.table-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px; color: var(--cream);
+}
+
+.table-tools { display: flex; gap: 8px; }
+
+.search-input {
+  background: var(--navy-3); border: 1px solid var(--border);
+  color: var(--text-bright); font-family: 'DM Sans', sans-serif;
+  font-size: 12px; padding: 7px 12px; outline: none;
+  width: 200px; transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--gold-dim); }
+.search-input::placeholder { color: var(--text-dim); }
+
+.filter-select {
+  background: var(--navy-3); border: 1px solid var(--border);
+  color: var(--text-dim); font-family: 'DM Sans', sans-serif;
+  font-size: 12px; padding: 7px 12px; outline: none; cursor: pointer;
+}
+
+table {
+  width: 100%; border-collapse: collapse;
+}
+
+thead th {
+  padding: 12px 24px;
+  text-align: left;
+  font-size: 10px; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--text-dim);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+
+tbody td {
+  padding: 14px 24px;
+  font-size: 13px; color: var(--text);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+tbody tr:hover td { background: rgba(255,255,255,0.015); }
+tbody tr:last-child td { border-bottom: none; }
+
+/* ── STATUS BADGES ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; font-size: 10px;
+  letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500;
+}
+.badge::before { content:''; width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+
+.badge-hot { background: var(--rose-dim); color: var(--rose); }
+.badge-hot::before { background: var(--rose); }
+.badge-warm { background: var(--amber-dim); color: var(--amber); }
+.badge-warm::before { background: var(--amber); }
+.badge-cold { background: var(--sapphire-dim); color: var(--sapphire); }
+.badge-cold::before { background: var(--sapphire); }
+.badge-qualified { background: var(--emerald-dim); color: var(--emerald); }
+.badge-qualified::before { background: var(--emerald); }
+.badge-active { background: var(--emerald-dim); color: var(--emerald); }
+.badge-active::before { background: var(--emerald); }
+.badge-pending { background: var(--amber-dim); color: var(--amber); }
+.badge-pending::before { background: var(--amber); }
+.badge-sold { background: var(--gold-glow); color: var(--gold-light); }
+.badge-sold::before { background: var(--gold); }
+.badge-draft { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+.badge-draft::before { background: var(--text-dim); }
+.badge-live { background: var(--emerald-dim); color: var(--emerald); }
+.badge-live::before { background: var(--emerald); }
+
+/* ── KANBAN BOARD ── */
+.kanban-board {
+  display: flex; gap: 16px;
+  overflow-x: auto; padding-bottom: 16px;
+  min-height: calc(100vh - 220px);
+}
+
+.kanban-col {
+  min-width: 280px; flex-shrink: 0;
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column;
+}
+
+.kanban-col-header {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.kanban-col-title {
+  font-size: 12px; font-weight: 600;
+  color: var(--text-bright); letter-spacing: 0.05em;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.kanban-count {
+  background: var(--navy-4);
+  color: var(--text-dim);
+  font-size: 10px; padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.kanban-col-bar {
+  height: 2px;
+  background: var(--border);
+}
+
+.kanban-col-bar.hot { background: var(--rose); }
+.kanban-col-bar.warm { background: var(--amber); }
+.kanban-col-bar.qual { background: var(--sapphire); }
+.kanban-col-bar.nego { background: var(--gold); }
+.kanban-col-bar.won { background: var(--emerald); }
+
+.kanban-cards { padding: 12px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+
+.lead-card {
+  background: var(--navy-3);
+  border: 1px solid var(--border);
+  padding: 14px;
+  cursor: pointer; transition: all 0.2s;
+}
+.lead-card:hover { border-color: var(--border-gold); transform: translateY(-1px); }
+
+.lead-card-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.lead-name { font-size: 13px; font-weight: 500; color: var(--cream); }
+.lead-source { font-size: 10px; color: var(--text-dim); }
+
+.lead-card-meta { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.lead-meta-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-dim); }
+.lead-meta-icon { width: 12px; text-align: center; }
+
+.lead-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 10px; border-top: 1px solid var(--border);
+}
+
+.lead-score {
+  display: flex; align-items: center; gap: 6px;
+}
+
+.score-bar {
+  height: 3px; width: 60px;
+  background: var(--navy-5); border-radius: 2px; overflow: hidden;
+}
+
+.score-fill { height: 100%; border-radius: 2px; }
+.score-fill.high { background: var(--emerald); }
+.score-fill.med { background: var(--amber); }
+.score-fill.low { background: var(--rose); }
+
+.lead-score-num { font-size: 11px; color: var(--text-dim); font-family: 'DM Mono', monospace; }
+
+.lead-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy-4), var(--navy-5));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
+/* ── PROPERTIES GRID ── */
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.property-card {
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+  overflow: hidden; transition: all 0.2s;
+  cursor: pointer;
+}
+.property-card:hover { border-color: var(--border-gold); }
+
+.property-image {
+  height: 180px;
+  background: var(--navy-3);
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.property-image-placeholder {
+  font-size: 40px; opacity: 0.3;
+}
+
+.property-image-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 50%, rgba(7,13,24,0.8) 100%);
+}
+
+.property-price-overlay {
+  position: absolute; bottom: 12px; left: 12px;
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; color: var(--gold-light);
+}
+
+.property-status-overlay {
+  position: absolute; top: 12px; right: 12px;
+}
+
+.property-info { padding: 18px; }
+
+.property-address {
+  font-size: 14px; font-weight: 500; color: var(--cream);
+  margin-bottom: 4px;
+}
+
+.property-area { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
+
+.property-specs {
+  display: flex; gap: 16px;
+  font-size: 11px; color: var(--text-dim);
+  padding-top: 12px; border-top: 1px solid var(--border);
+}
+
+.spec-item { display: flex; align-items: center; gap: 5px; }
+
+.property-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--navy-3);
+}
+
+.property-agent { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-dim); }
+.agent-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--gold-dim); display: flex; align-items: center; justify-content: center; font-size: 8px; color: var(--gold-light); }
+
+/* ── AI TOOLS ── */
+.ai-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px; margin-bottom: 28px;
+}
+
+.ai-tool-card {
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+  padding: 24px;
+  cursor: pointer; transition: all 0.2s;
+  position: relative; overflow: hidden;
+}
+
+.ai-tool-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+
+.ai-tool-card:hover { border-color: var(--border-gold); }
+.ai-tool-card:hover::before { opacity: 1; }
+
+.ai-tool-icon {
+  font-size: 28px; margin-bottom: 14px;
+  display: block;
+}
+
+.ai-tool-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px; color: var(--cream);
+  margin-bottom: 6px;
+}
+
+.ai-tool-desc {
+  font-size: 12px; color: var(--text-dim);
+  line-height: 1.6; margin-bottom: 16px;
+}
+
+.ai-tool-usage {
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.usage-bar-wrap { flex: 1; margin-right: 10px; }
+.usage-bar { height: 2px; background: var(--navy-5); border-radius: 1px; }
+.usage-fill { height: 100%; background: var(--gold); border-radius: 1px; }
+.usage-label { font-size: 10px; color: var(--text-dim); font-family: 'DM Mono', monospace; }
+
+/* ── AI INTERFACE ── */
+.ai-interface {
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  height: 500px;
+}
+
+.ai-interface-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+
+.ai-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--emerald); }
+.ai-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--emerald); animation: pulse 2s infinite; }
+
+.ai-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+
+.ai-message { max-width: 80%; }
+.ai-message.user { align-self: flex-end; }
+.ai-message.assistant { align-self: flex-start; }
+
+.ai-bubble {
+  padding: 12px 16px;
+  font-size: 13px; line-height: 1.6;
+}
+
+.ai-message.user .ai-bubble {
+  background: var(--gold-glow);
+  border: 1px solid var(--border-gold);
+  color: var(--cream);
+}
+
+.ai-message.assistant .ai-bubble {
+  background: var(--navy-3);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.ai-sender { font-size: 10px; color: var(--text-dim); margin-bottom: 4px; letter-spacing: 0.1em; }
+
+.ai-input-row {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 10px;
+}
+
+.ai-input {
+  flex: 1; background: var(--navy-3); border: 1px solid var(--border);
+  color: var(--text-bright); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; padding: 10px 14px; outline: none;
+  transition: border-color 0.2s;
+}
+.ai-input:focus { border-color: var(--gold-dim); }
+
+/* ── STAFF GRID ── */
+.staff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.staff-card {
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+  overflow: hidden; transition: all 0.2s;
+}
+.staff-card:hover { border-color: var(--border-gold); }
+
+.staff-card-header {
+  padding: 20px;
+  display: flex; align-items: flex-start; gap: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.staff-avatar {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--navy-4), var(--navy-5));
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; color: var(--gold);
+  flex-shrink: 0;
+}
+
+.staff-name { font-size: 14px; font-weight: 500; color: var(--cream); margin-bottom: 2px; }
+.staff-role { font-size: 11px; color: var(--text-dim); }
+.staff-online { font-size: 10px; color: var(--emerald); display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+
+.staff-card-body { padding: 16px 20px; }
+
+.staff-stat-row { display: flex; justify-content: space-between; margin-bottom: 12px; }
+.staff-stat { text-align: center; }
+.staff-stat-val { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--gold-light); }
+.staff-stat-label { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+
+.staff-card-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 8px;
+  background: var(--navy-3);
+}
+
+/* ── INTEGRATIONS ── */
+.integrations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.integration-card {
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+  padding: 20px;
+  display: flex; align-items: flex-start; gap: 16px;
+  transition: all 0.2s;
+}
+.integration-card:hover { border-color: var(--border-gold); }
+
+.integration-logo {
+  width: 44px; height: 44px; flex-shrink: 0;
+  background: var(--navy-4);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+
+.integration-info { flex: 1; }
+.integration-name { font-size: 14px; font-weight: 500; color: var(--cream); margin-bottom: 3px; }
+.integration-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; margin-bottom: 10px; }
+
+.integration-status {
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.toggle-wrap { display: flex; align-items: center; gap: 8px; }
+
+.toggle {
+  width: 36px; height: 20px;
+  background: var(--navy-5);
+  border-radius: 10px; cursor: pointer;
+  position: relative; transition: background 0.2s;
+}
+
+.toggle.on { background: var(--emerald); }
+
+.toggle::after {
+  content: '';
+  position: absolute; top: 3px; left: 3px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: white; transition: transform 0.2s;
+}
+
+.toggle.on::after { transform: translateX(16px); }
+
+.toggle-label { font-size: 10px; color: var(--text-dim); }
+
+/* ── SECURITY ── */
+.security-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.security-card {
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+  padding: 24px;
+}
+
+.security-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px; color: var(--cream);
+  margin-bottom: 4px;
+}
+
+.security-card-desc { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; }
+
+.audit-list { display: flex; flex-direction: column; gap: 0; }
+
+.audit-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.audit-item:last-child { border-bottom: none; }
+
+.audit-icon {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 12px;
+}
+
+.audit-icon.success { background: var(--emerald-dim); color: var(--emerald); }
+.audit-icon.warning { background: var(--amber-dim); color: var(--amber); }
+.audit-icon.danger { background: var(--rose-dim); color: var(--rose); }
+.audit-icon.info { background: var(--sapphire-dim); color: var(--sapphire); }
+
+.audit-info { flex: 1; }
+.audit-action { font-size: 13px; color: var(--text-bright); }
+.audit-meta { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+.audit-time { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); white-space: nowrap; }
+
+/* ── PERMISSION TABLE ── */
+.perm-table { width: 100%; }
+.perm-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.perm-row:last-child { border-bottom: none; }
+.perm-feature { flex: 1; font-size: 12px; color: var(--text); }
+.perm-checks { display: flex; gap: 20px; }
+.perm-check { width: 60px; text-align: center; }
+.check-mark { width: 18px; height: 18px; margin: auto; }
+.check-yes { color: var(--emerald); font-size: 14px; }
+.check-no { color: var(--rose); font-size: 12px; }
+.perm-role-header { display: flex; align-items: center; padding: 8px 0; margin-bottom: 4px; }
+.perm-role-label { width: 60px; text-align: center; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+
+/* ── CLIENT WORKFLOW ── */
+.workflow-stages {
+  display: flex; gap: 0;
+  position: relative;
+  margin-bottom: 28px; overflow-x: auto;
+}
+
+.workflow-stage {
+  flex: 1; min-width: 140px;
+  padding: 16px;
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+  margin-right: -1px;
+  cursor: pointer; transition: all 0.2s;
+  position: relative;
+}
+
+.workflow-stage.active {
+  background: var(--gold-glow);
+  border-color: var(--gold-dim);
+  z-index: 1;
+}
+
+.workflow-stage.complete { background: rgba(29,191,138,0.06); border-color: rgba(29,191,138,0.2); }
+
+.wf-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--text-dim); margin-bottom: 6px;
+}
+
+.wf-name { font-size: 12px; font-weight: 500; color: var(--text-bright); }
+.workflow-stage.active .wf-name { color: var(--gold-light); }
+.workflow-stage.complete .wf-name { color: var(--emerald); }
+
+.wf-check { font-size: 14px; color: var(--emerald); margin-top: 4px; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(7,13,24,0.85);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--navy-2);
+  border: 1px solid var(--border-gold);
+  width: 560px; max-height: 85vh;
+  overflow-y: auto;
+  transform: translateY(20px); transition: transform 0.2s;
+}
+
+.modal-overlay.open .modal { transform: translateY(0); }
+
+.modal-header {
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; color: var(--cream);
+}
+
+.modal-close {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; transition: all 0.2s;
+}
+.modal-close:hover { border-color: var(--rose); color: var(--rose); }
+
+.modal-body { padding: 28px; }
+
+.modal-footer {
+  padding: 20px 28px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+
+/* ── NOTIFICATION PANEL ── */
+.notif-panel {
+  position: absolute; right: 0; top: calc(var(--header-h) + 8px);
+  width: 340px;
+  background: var(--navy-2);
+  border: 1px solid var(--border-gold);
+  z-index: 200;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  transform: translateY(-10px); opacity: 0; pointer-events: none;
+  transition: all 0.2s;
+}
+
+.notif-panel.open { transform: translateY(0); opacity: 1; pointer-events: all; }
+
+.notif-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.notif-title { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--cream); }
+
+.notif-list { max-height: 380px; overflow-y: auto; }
+
+.notif-item {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.15s;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.notif-item:hover { background: rgba(255,255,255,0.02); }
+.notif-item.unread { background: rgba(155,139,114,0.06); }
+
+.notif-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.notif-info { flex: 1; }
+.notif-text { font-size: 12px; color: var(--text-bright); margin-bottom: 3px; }
+.notif-time { font-size: 10px; color: var(--text-dim); font-family: 'DM Mono', monospace; }
+
+/* ── TWO-FACTOR AUTH VIEW ── */
+#tfa-view { display: none; }
+#tfa-view.active { display: block; }
+#login-view.hidden { display: none; }
+
+/* ── SETTINGS ── */
+.settings-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 20px;
+}
+
+.settings-nav {
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+}
+
+.settings-nav-item {
+  padding: 12px 18px;
+  font-size: 13px; color: var(--text-dim);
+  cursor: pointer; border-left: 2px solid transparent;
+  transition: all 0.15s;
+}
+
+.settings-nav-item.active {
+  color: var(--gold-light); background: var(--gold-glow);
+  border-left-color: var(--gold);
+}
+
+.settings-nav-item:hover { color: var(--text-bright); }
+
+.settings-panel { background: var(--navy-2); border: 1px solid var(--border); padding: 28px; }
+
+.settings-section { margin-bottom: 32px; }
+.settings-section:last-child { margin-bottom: 0; }
+
+.settings-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px; color: var(--cream);
+  margin-bottom: 16px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.settings-row:last-child { border-bottom: none; }
+
+.settings-label { font-size: 13px; color: var(--text-bright); }
+.settings-sublabel { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+/* ── DASHBOARD ACTIVITY ── */
+.activity-feed {
+  background: var(--navy-2); border: 1px solid var(--border);
+  padding: 0;
+}
+
+.activity-feed-header {
+  padding: 18px 24px; border-bottom: 1px solid var(--border);
+}
+
+.activity-feed-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px; color: var(--cream);
+}
+
+.activity-list { }
+
+.activity-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 24px; border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.activity-item:last-child { border-bottom: none; }
+
+.activity-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--navy-4); display: flex; align-items: center;
+  justify-content: center; font-size: 12px; color: var(--text-dim);
+  flex-shrink: 0; border: 1px solid var(--border);
+}
+
+.activity-text { flex: 1; font-size: 12px; color: var(--text); line-height: 1.5; }
+.activity-text strong { color: var(--text-bright); }
+.activity-time { font-size: 10px; color: var(--text-dim); font-family: 'DM Mono', monospace; white-space: nowrap; }
+
+/* ── PIPELINE CHART ── */
+.pipeline-stages { display: flex; flex-direction: column; gap: 12px; }
+.pipeline-stage { }
+.pipeline-stage-header {
+  display: flex; justify-content: space-between; margin-bottom: 5px;
+}
+.pipeline-stage-name { font-size: 12px; color: var(--text); }
+.pipeline-stage-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gold-light); }
+.pipeline-bar { height: 6px; background: var(--navy-5); border-radius: 3px; overflow: hidden; }
+.pipeline-fill { height: 100%; border-radius: 3px; transition: width 0.6s; }
+
+/* ── CLIENT PORTAL ── */
+.client-overview {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px; margin-bottom: 24px;
+}
+
+.client-info-card {
+  background: var(--navy-2); border: 1px solid var(--border); padding: 20px;
+}
+
+.client-info-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 6px; }
+.client-info-value { font-size: 14px; color: var(--cream); font-weight: 500; }
+
+/* Animations */
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.25s ease; }
+
+/* ── TOAST ── */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+
+.toast {
+  background: var(--navy-3); border: 1px solid var(--border-gold);
+  padding: 12px 18px; min-width: 280px;
+  display: flex; align-items: center; gap: 12px;
+  animation: slideIn 0.3s ease;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+@keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+.toast-icon { font-size: 16px; }
+.toast-text { font-size: 12px; color: var(--text-bright); flex: 1; }
+.toast.success { border-color: rgba(29,191,138,0.3); }
+.toast.error { border-color: rgba(224,92,106,0.3); }
+.toast.info { border-color: var(--border-gold); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1280px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-row { grid-template-columns: 1fr; }
+  .ai-tools-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════ AUTH SCREEN ═══════════════════════════════════ -->
+<div id="auth-screen">
+  <div class="auth-bg"></div>
+  <div class="auth-grid"></div>
+
+  <div class="auth-panel">
+    <div class="auth-header">
+      <div class="auth-logo">
+        <div class="auth-logo-mark">A</div>
+        <div class="auth-logo-text">APEX Intelligence</div>
+      </div>
+      <div class="auth-title">Secure Sign In</div>
+      <div class="auth-subtitle">UK & Middle East Property AI Platform</div>
+    </div>
+
+    <div class="auth-body">
+      <!-- Role selector -->
+      <div style="margin-bottom:18px;">
+        <div class="form-label">Access Level</div>
+        <div class="auth-role-selector">
+          <button class="role-btn active" onclick="selectRole(this,'admin')">⬡ Admin</button>
+          <button class="role-btn" onclick="selectRole(this,'agent')">◈ Agent</button>
+          <button class="role-btn" onclick="selectRole(this,'client')">◇ Client</button>
+        </div>
+      </div>
+
+      <div id="login-view">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-input" type="email" placeholder="director@apexai.co.uk" id="login-email" value="director@apexai.co.uk">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="form-input-row">
+            <input class="form-input" type="password" placeholder="Enter password" id="login-pw" value="ApexDemo2025!" style="flex:1;">
+            <button class="btn btn-secondary btn-sm" style="flex-shrink:0;" id="togglePwBtn" onclick="togglePw()">👁</button>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;margin-bottom:20px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dim);cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:var(--gold);"> Remember device
+          </label>
+          <span style="font-size:12px;color:var(--gold);cursor:pointer;">Forgot password?</span>
+        </div>
+
+        <button class="btn-auth" onclick="proceedToTFA()">Continue to Verification →</button>
+      </div>
+
+      <!-- 2FA View -->
+      <div id="tfa-view">
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="font-size:32px;margin-bottom:12px;">🔐</div>
+          <div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--cream);margin-bottom:6px;">Two-Factor Authentication</div>
+          <div style="font-size:12px;color:var(--text-dim);">Enter the 6-digit code from your authenticator app or SMS</div>
+        </div>
+
+        <div class="tfa-grid" style="margin-bottom:24px;">
+          <input class="tfa-input" maxlength="1" oninput="tfa_next(this,0)">
+          <input class="tfa-input" maxlength="1" oninput="tfa_next(this,1)">
+          <input class="tfa-input" maxlength="1" oninput="tfa_next(this,2)">
+          <input class="tfa-input" maxlength="1" oninput="tfa_next(this,3)">
+          <input class="tfa-input" maxlength="1" oninput="tfa_next(this,4)">
+          <input class="tfa-input" maxlength="1" oninput="tfa_next(this,5)">
+        </div>
+
+        <button class="btn-auth" onclick="doLogin()">Verify & Sign In →</button>
+
+        <div style="text-align:center;margin-top:16px;">
+          <span style="font-size:12px;color:var(--text-dim);">Didn't receive code?&nbsp;</span>
+          <span style="font-size:12px;color:var(--gold);cursor:pointer;">Resend (0:45)</span>
+        </div>
+      </div>
+
+      <div class="auth-security-note">
+        <span>🛡</span>
+        <span>256-bit AES encrypted · SOC 2 Type II · GDPR compliant · ISO 27001</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ APP ═══════════════════════════════════ -->
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-logo">
+      <div class="header-logo-mark">A</div>
+      <div>
+        <div class="header-logo-text">APEX Intelligence</div>
+        <div class="header-logo-env">Property AI Platform · UK & ME</div>
+      </div>
+    </div>
+
+    <div class="header-search">
+      <span style="color:var(--text-dim);font-size:13px;">⌕</span>
+      <input placeholder="Search leads, properties, clients..." onkeyup="globalSearch(this.value)">
+      <span style="font-size:10px;color:var(--text-dim);font-family:'DM Mono',monospace;">⌘K</span>
+    </div>
+
+    <div class="header-actions">
+      <div class="security-indicator">
+        <div class="sec-dot"></div>
+        <div class="sec-text">SECURED</div>
+      </div>
+
+      <button class="h-action" onclick="toggleNotif()" title="Notifications">
+        🔔
+        <div class="notif-badge">4</div>
+      </button>
+
+      <button class="h-action" title="AI Assistant" onclick="navigateTo('ai-tools')">⚡</button>
+      <button class="h-action" title="Settings" onclick="navigateTo('settings')">⚙</button>
+
+      <div class="header-user" onclick="toggleUserMenu()">
+        <div class="user-avatar" id="user-avatar">AD</div>
+        <div class="user-info">
+          <div class="user-name" id="user-name-display">Alexandra Davies</div>
+          <div class="user-role" id="user-role-display">Super Admin</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification panel -->
+    <div class="notif-panel" id="notif-panel" style="position:absolute;right:24px;">
+      <div class="notif-header">
+        <div class="notif-title">Notifications</div>
+        <span style="font-size:11px;color:var(--gold);cursor:pointer;">Mark all read</span>
+      </div>
+      <div class="notif-list">
+        <div class="notif-item unread">
+          <div class="notif-icon">🔥</div>
+          <div class="notif-info">
+            <div class="notif-text">Hot lead: <strong>Khalid Al-Mansouri</strong> enquired about 3 Mayfair properties</div>
+            <div class="notif-time">2 min ago</div>
+          </div>
+        </div>
+        <div class="notif-item unread">
+          <div class="notif-icon">✅</div>
+          <div class="notif-info">
+            <div class="notif-text">Contract signed: <strong>72 Knightsbridge</strong> — £4.2M completion</div>
+            <div class="notif-time">18 min ago</div>
+          </div>
+        </div>
+        <div class="notif-item unread">
+          <div class="notif-icon">🤖</div>
+          <div class="notif-info">
+            <div class="notif-text">AI Lead Engine qualified 12 new leads from Rightmove overnight</div>
+            <div class="notif-time">1 hr ago</div>
+          </div>
+        </div>
+        <div class="notif-item unread">
+          <div class="notif-icon">⚠️</div>
+          <div class="notif-info">
+            <div class="notif-text">AML alert: <strong>Ahmed Hassan</strong> — PEP screening flagged for review</div>
+            <div class="notif-time">3 hr ago</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon">📊</div>
+          <div class="notif-info">
+            <div class="notif-text">Monthly report generated — <strong>£485K</strong> pipeline value</div>
+            <div class="notif-time">Yesterday</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div class="app-body">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <div class="nav-item active" onclick="navigateTo('dashboard')">
+          <span class="nav-icon">⊞</span> Dashboard
+        </div>
+        <div class="nav-item" onclick="navigateTo('leads')">
+          <span class="nav-icon">◈</span> Lead Pipeline
+          <span class="nav-badge">14</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('properties')">
+          <span class="nav-icon">⌂</span> Properties
+        </div>
+        <div class="nav-item" onclick="navigateTo('clients')">
+          <span class="nav-icon">◇</span> Clients
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">AI Suite</div>
+        <div class="nav-item" onclick="navigateTo('ai-tools')">
+          <span class="nav-icon">⚡</span> AI Tools
+        </div>
+        <div class="nav-item" onclick="navigateTo('workflows')">
+          <span class="nav-icon">⟳</span> Automation
+        </div>
+        <div class="nav-item" onclick="navigateTo('listings-ai')">
+          <span class="nav-icon">✦</span> Listing AI
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Management</div>
+        <div class="nav-item" onclick="navigateTo('staff')">
+          <span class="nav-icon">⊙</span> Staff & Roles
+        </div>
+        <div class="nav-item" onclick="navigateTo('integrations')">
+          <span class="nav-icon">⊕</span> Integrations
+        </div>
+        <div class="nav-item" onclick="navigateTo('security')">
+          <span class="nav-icon">🛡</span> Security
+          <span class="nav-badge" style="background:var(--amber-dim);color:var(--amber);">!</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('settings')">
+          <span class="nav-icon">⚙</span> Settings
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Reports</div>
+        <div class="nav-item" onclick="navigateTo('analytics')">
+          <span class="nav-icon">▲</span> Analytics
+        </div>
+        <div class="nav-item" onclick="navigateTo('compliance')">
+          <span class="nav-icon">⊘</span> Compliance
+        </div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="agent-status-card">
+          <div class="agent-status-header">
+            <div class="agent-status-name" id="sidebar-user-name">Alexandra D.</div>
+            <div class="status-online"><div class="status-dot"></div> Online</div>
+          </div>
+          <div class="agent-metrics">
+            <div class="agent-metric">
+              <div class="agent-metric-val" id="sidebar-leads">14</div>
+              <div class="agent-metric-label">My Leads</div>
+            </div>
+            <div class="agent-metric">
+              <div class="agent-metric-val">£485K</div>
+              <div class="agent-metric-label">Pipeline</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content" id="main-content">
+
+      <!-- ═══ DASHBOARD PAGE ═══ -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">Overview · March 2025</div>
+            <h1 class="page-title">Command Centre</h1>
+            <div class="page-subtitle">Real-time intelligence across all operations</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm" onclick="showToast('Generating report...','info')">⬇ Export Report</button>
+            <button class="btn btn-primary btn-sm" onclick="openModal('new-lead-modal')">+ Add Lead</button>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-label">Monthly Revenue</div>
+              <div class="kpi-icon" style="background:var(--gold-glow);color:var(--gold);">£</div>
+            </div>
+            <div class="kpi-value">£48.2K</div>
+            <div class="kpi-delta up">↑ 18.4% vs last month</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-label">Active Leads</div>
+              <div class="kpi-icon" style="background:rgba(155,139,114,0.08);color:var(--text-bright);">◈</div>
+            </div>
+            <div class="kpi-value">127</div>
+            <div class="kpi-delta up">↑ 23 new this week</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-label">Conversion Rate</div>
+              <div class="kpi-icon" style="background:var(--emerald-dim);color:var(--emerald);">%</div>
+            </div>
+            <div class="kpi-value">34.7%</div>
+            <div class="kpi-delta up">↑ 4.2% improvement</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-label">Pipeline Value</div>
+              <div class="kpi-icon" style="background:rgba(155,139,114,0.08);color:var(--text-dim);">⬡</div>
+            </div>
+            <div class="kpi-value">£4.85M</div>
+            <div class="kpi-delta up">↑ £820K vs prev</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Revenue & Lead Flow</div>
+              <div class="chart-period">
+                <button class="period-btn active">1M</button>
+                <button class="period-btn" onclick="setPeriod(this)">3M</button>
+                <button class="period-btn" onclick="setPeriod(this)">6M</button>
+                <button class="period-btn" onclick="setPeriod(this)">1Y</button>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="revenue-chart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Pipeline Stages</div>
+            </div>
+            <div class="pipeline-stages" id="pipeline-stages">
+              <div class="pipeline-stage">
+                <div class="pipeline-stage-header">
+                  <span class="pipeline-stage-name">New Enquiries</span>
+                  <span class="pipeline-stage-val">38 leads</span>
+                </div>
+                <div class="pipeline-bar"><div class="pipeline-fill" style="width:100%;background:var(--sapphire);"></div></div>
+              </div>
+              <div class="pipeline-stage">
+                <div class="pipeline-stage-header">
+                  <span class="pipeline-stage-name">Qualified</span>
+                  <span class="pipeline-stage-val">29 leads</span>
+                </div>
+                <div class="pipeline-bar"><div class="pipeline-fill" style="width:76%;background:var(--gold);"></div></div>
+              </div>
+              <div class="pipeline-stage">
+                <div class="pipeline-stage-header">
+                  <span class="pipeline-stage-name">Property Matched</span>
+                  <span class="pipeline-stage-val">21 leads</span>
+                </div>
+                <div class="pipeline-bar"><div class="pipeline-fill" style="width:55%;background:var(--amber);"></div></div>
+              </div>
+              <div class="pipeline-stage">
+                <div class="pipeline-stage-header">
+                  <span class="pipeline-stage-name">Negotiating</span>
+                  <span class="pipeline-stage-val">12 leads</span>
+                </div>
+                <div class="pipeline-bar"><div class="pipeline-fill" style="width:32%;background:var(--rose);"></div></div>
+              </div>
+              <div class="pipeline-stage">
+                <div class="pipeline-stage-header">
+                  <span class="pipeline-stage-name">Completed</span>
+                  <span class="pipeline-stage-val">7 deals</span>
+                </div>
+                <div class="pipeline-bar"><div class="pipeline-fill" style="width:18%;background:var(--emerald);"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two-column bottom -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+          <!-- Recent leads table -->
+          <div class="data-table-wrap">
+            <div class="table-header">
+              <div class="table-title">Hot Leads Today</div>
+              <button class="btn btn-ghost btn-sm" onclick="navigateTo('leads')">View all →</button>
+            </div>
+            <table>
+              <thead><tr>
+                <th>Lead</th><th>Budget</th><th>Status</th><th>AI Score</th>
+              </tr></thead>
+              <tbody>
+                <tr onclick="openLeadModal('Khalid Al-Mansouri')" style="cursor:pointer;">
+                  <td><div style="font-weight:500;color:var(--cream);">Khalid Al-Mansouri</div><div style="font-size:11px;color:var(--text-dim);">Dubai → London</div></td>
+                  <td style="color:var(--gold-light);font-family:'Playfair Display',serif;">£2.5M+</td>
+                  <td><span class="badge badge-hot">Hot</span></td>
+                  <td><span style="color:var(--emerald);font-family:'DM Mono',monospace;font-size:12px;">94/100</span></td>
+                </tr>
+                <tr>
+                  <td><div style="font-weight:500;color:var(--cream);">Sarah Mitchell</div><div style="font-size:11px;color:var(--text-dim);">Rightmove enquiry</div></td>
+                  <td style="color:var(--gold-light);font-family:'Playfair Display',serif;">£850K</td>
+                  <td><span class="badge badge-warm">Warm</span></td>
+                  <td><span style="color:var(--amber);font-family:'DM Mono',monospace;font-size:12px;">71/100</span></td>
+                </tr>
+                <tr>
+                  <td><div style="font-weight:500;color:var(--cream);">Mohammed Al-Farsi</div><div style="font-size:11px;color:var(--text-dim);">Abu Dhabi investor</div></td>
+                  <td style="color:var(--gold-light);font-family:'Playfair Display',serif;">£5M+</td>
+                  <td><span class="badge badge-qualified">Qualified</span></td>
+                  <td><span style="color:var(--emerald);font-family:'DM Mono',monospace;font-size:12px;">88/100</span></td>
+                </tr>
+                <tr>
+                  <td><div style="font-weight:500;color:var(--cream);">Emma & James Thornton</div><div style="font-size:11px;color:var(--text-dim);">Zoopla — family home</div></td>
+                  <td style="color:var(--gold-light);font-family:'Playfair Display',serif;">£1.2M</td>
+                  <td><span class="badge badge-warm">Warm</span></td>
+                  <td><span style="color:var(--amber);font-family:'DM Mono',monospace;font-size:12px;">67/100</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Activity Feed -->
+          <div class="activity-feed">
+            <div class="activity-feed-header">
+              <div class="activity-feed-title">Live Activity Feed</div>
+            </div>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-avatar">🤖</div>
+                <div class="activity-text"><strong>AI Engine</strong> auto-qualified 3 Rightmove leads and sent welcome sequences</div>
+                <div class="activity-time">2m</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-avatar">JW</div>
+                <div class="activity-text"><strong>James W.</strong> updated status of 14 Belgravia Sq to <span style="color:var(--gold-light)">Under Offer</span></div>
+                <div class="activity-time">8m</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-avatar">🔔</div>
+                <div class="activity-text">AML check completed for <strong>Ahmed Hassan</strong> — <span style="color:var(--amber)">manual review required</span></div>
+                <div class="activity-time">24m</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-avatar">LP</div>
+                <div class="activity-text"><strong>Listing AI</strong> generated bilingual (EN/AR) brochure for 8 Kensington Palace Gardens</div>
+                <div class="activity-time">1h</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-avatar">✅</div>
+                <div class="activity-text">Deal closed: <strong>72 Knightsbridge</strong> — £4.2M · Commission £84K locked</div>
+                <div class="activity-time">3h</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-avatar">🇦🇪</div>
+                <div class="activity-text">WhatsApp AI responded to 6 Dubai enquiries in Arabic overnight</div>
+                <div class="activity-time">8h</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═══ LEADS PAGE ═══ -->
+      <div class="page" id="page-leads">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">CRM · Pipeline</div>
+            <h1 class="page-title">Lead Pipeline</h1>
+            <div class="page-subtitle">127 active leads · AI-scored and prioritised</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm" onclick="showToast('Syncing from Rightmove & Zoopla...','info')">⟳ Sync Portals</button>
+            <button class="btn btn-secondary btn-sm">⬇ Export CSV</button>
+            <button class="btn btn-primary btn-sm" onclick="openModal('new-lead-modal')">+ New Lead</button>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm active-filter" style="border-color:var(--gold-dim);color:var(--gold-light);">All (127)</button>
+          <button class="btn btn-secondary btn-sm">🔥 Hot (18)</button>
+          <button class="btn btn-secondary btn-sm">🌡 Warm (41)</button>
+          <button class="btn btn-secondary btn-sm">❄️ Cold (68)</button>
+          <button class="btn btn-secondary btn-sm">🇬🇧 UK</button>
+          <button class="btn btn-secondary btn-sm">🇦🇪 Middle East</button>
+          <select class="filter-select">
+            <option>Sort: AI Score ↓</option>
+            <option>Sort: Budget ↓</option>
+            <option>Sort: Newest</option>
+            <option>Sort: Follow-up due</option>
+          </select>
+        </div>
+
+        <div class="kanban-board">
+          <!-- NEW ENQUIRIES -->
+          <div class="kanban-col">
+            <div class="kanban-col-bar hot"></div>
+            <div class="kanban-col-header">
+              <div class="kanban-col-title">🔥 New Enquiries <span class="kanban-count">38</span></div>
+              <button class="btn btn-ghost btn-icon" style="font-size:16px;" onclick="openModal('new-lead-modal')">+</button>
+            </div>
+            <div class="kanban-cards">
+              <div class="lead-card" onclick="openLeadModal('Khalid Al-Mansouri')">
+                <div class="lead-card-top">
+                  <div><div class="lead-name">Khalid Al-Mansouri</div><div class="lead-source">WhatsApp · Dubai</div></div>
+                  <span class="badge badge-hot">Hot</span>
+                </div>
+                <div class="lead-card-meta">
+                  <div class="lead-meta-row"><span class="lead-meta-icon">£</span> £2.5M+ budget</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">⌂</span> Mayfair / Belgravia</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">⏰</span> Enquired 2h ago</div>
+                </div>
+                <div class="lead-card-footer">
+                  <div class="lead-score">
+                    <div class="score-bar"><div class="score-fill high" style="width:94%;"></div></div>
+                    <div class="lead-score-num">94</div>
+                  </div>
+                  <div class="lead-avatar">JW</div>
+                </div>
+              </div>
+
+              <div class="lead-card">
+                <div class="lead-card-top">
+                  <div><div class="lead-name">Fatima Al-Rashid</div><div class="lead-source">Property Finder · Abu Dhabi</div></div>
+                  <span class="badge badge-hot">Hot</span>
+                </div>
+                <div class="lead-card-meta">
+                  <div class="lead-meta-row"><span class="lead-meta-icon">£</span> £1.8M budget</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">⌂</span> Chelsea / Kensington</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">⏰</span> 5h ago</div>
+                </div>
+                <div class="lead-card-footer">
+                  <div class="lead-score">
+                    <div class="score-bar"><div class="score-fill high" style="width:87%;"></div></div>
+                    <div class="lead-score-num">87</div>
+                  </div>
+                  <div class="lead-avatar">SR</div>
+                </div>
+              </div>
+
+              <div class="lead-card">
+                <div class="lead-card-top">
+                  <div><div class="lead-name">Oliver Hawthorne</div><div class="lead-source">Rightmove · London</div></div>
+                  <span class="badge badge-warm">Warm</span>
+                </div>
+                <div class="lead-card-meta">
+                  <div class="lead-meta-row"><span class="lead-meta-icon">£</span> £650K budget</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">⌂</span> Islington / Hackney</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">⏰</span> Yesterday</div>
+                </div>
+                <div class="lead-card-footer">
+                  <div class="lead-score">
+                    <div class="score-bar"><div class="score-fill med" style="width:72%;"></div></div>
+                    <div class="lead-score-num">72</div>
+                  </div>
+                  <div class="lead-avatar">AD</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- QUALIFIED -->
+          <div class="kanban-col">
+            <div class="kanban-col-bar qual"></div>
+            <div class="kanban-col-header">
+              <div class="kanban-col-title">✅ AI Qualified <span class="kanban-count">29</span></div>
+            </div>
+            <div class="kanban-cards">
+              <div class="lead-card" onclick="openLeadModal('Mohammed Al-Farsi')">
+                <div class="lead-card-top">
+                  <div><div class="lead-name">Mohammed Al-Farsi</div><div class="lead-source">Direct Referral · Abu Dhabi</div></div>
+                  <span class="badge badge-qualified">Qualified</span>
+                </div>
+                <div class="lead-card-meta">
+                  <div class="lead-meta-row"><span class="lead-meta-icon">£</span> £5M+ budget</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">⌂</span> Prime Central London</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">📞</span> Call booked: Thu 2pm</div>
+                </div>
+                <div class="lead-card-footer">
+                  <div class="lead-score">
+                    <div class="score-bar"><div class="score-fill high" style="width:88%;"></div></div>
+                    <div class="lead-score-num">88</div>
+                  </div>
+                  <div class="lead-avatar">JW</div>
+                </div>
+              </div>
+
+              <div class="lead-card">
+                <div class="lead-card-top">
+                  <div><div class="lead-name">Sarah Mitchell</div><div class="lead-source">Rightmove · Surrey</div></div>
+                  <span class="badge badge-warm">Warm</span>
+                </div>
+                <div class="lead-card-meta">
+                  <div class="lead-meta-row"><span class="lead-meta-icon">£</span> £850K budget</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">⌂</span> Richmond / Wimbledon</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">📅</span> Viewing Sat 11am</div>
+                </div>
+                <div class="lead-card-footer">
+                  <div class="lead-score">
+                    <div class="score-bar"><div class="score-fill med" style="width:71%;"></div></div>
+                    <div class="lead-score-num">71</div>
+                  </div>
+                  <div class="lead-avatar">SR</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEWING BOOKED -->
+          <div class="kanban-col">
+            <div class="kanban-col-bar warm"></div>
+            <div class="kanban-col-header">
+              <div class="kanban-col-title">🏠 Viewing Booked <span class="kanban-count">21</span></div>
+            </div>
+            <div class="kanban-cards">
+              <div class="lead-card">
+                <div class="lead-card-top">
+                  <div><div class="lead-name">Emma & James Thornton</div><div class="lead-source">Zoopla · London</div></div>
+                  <span class="badge badge-warm">Warm</span>
+                </div>
+                <div class="lead-card-meta">
+                  <div class="lead-meta-row"><span class="lead-meta-icon">£</span> £1.2M budget</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">⌂</span> 14 Elm Park Gardens, SW10</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">📅</span> Wed 3pm — confirmed</div>
+                </div>
+                <div class="lead-card-footer">
+                  <div class="lead-score">
+                    <div class="score-bar"><div class="score-fill med" style="width:67%;"></div></div>
+                    <div class="lead-score-num">67</div>
+                  </div>
+                  <div class="lead-avatar">AD</div>
+                </div>
+              </div>
+
+              <div class="lead-card">
+                <div class="lead-card-top">
+                  <div><div class="lead-name">Rania Saleh</div><div class="lead-source">WhatsApp AR · Riyadh</div></div>
+                  <span class="badge badge-hot">Hot</span>
+                </div>
+                <div class="lead-card-meta">
+                  <div class="lead-meta-row"><span class="lead-meta-icon">£</span> £3.4M budget</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">⌂</span> St John's Wood</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">📅</span> Fri 10am — VIP tour</div>
+                </div>
+                <div class="lead-card-footer">
+                  <div class="lead-score">
+                    <div class="score-bar"><div class="score-fill high" style="width:82%;"></div></div>
+                    <div class="lead-score-num">82</div>
+                  </div>
+                  <div class="lead-avatar">JW</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- NEGOTIATING -->
+          <div class="kanban-col">
+            <div class="kanban-col-bar nego"></div>
+            <div class="kanban-col-header">
+              <div class="kanban-col-title">💼 Negotiating <span class="kanban-count">12</span></div>
+            </div>
+            <div class="kanban-cards">
+              <div class="lead-card">
+                <div class="lead-card-top">
+                  <div><div class="lead-name">David & Claire Pemberton</div><div class="lead-source">Direct · Chelsea</div></div>
+                  <span class="badge badge-hot">Hot</span>
+                </div>
+                <div class="lead-card-meta">
+                  <div class="lead-meta-row"><span class="lead-meta-icon">£</span> Offer: £4.05M (ask: £4.2M)</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">⌂</span> 72 Knightsbridge, SW1</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">⚡</span> Counter offer pending</div>
+                </div>
+                <div class="lead-card-footer">
+                  <div class="lead-score">
+                    <div class="score-bar"><div class="score-fill high" style="width:96%;"></div></div>
+                    <div class="lead-score-num">96</div>
+                  </div>
+                  <div class="lead-avatar">JW</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WON -->
+          <div class="kanban-col">
+            <div class="kanban-col-bar won"></div>
+            <div class="kanban-col-header">
+              <div class="kanban-col-title">🏆 Completed <span class="kanban-count">7</span></div>
+            </div>
+            <div class="kanban-cards">
+              <div class="lead-card">
+                <div class="lead-card-top">
+                  <div><div class="lead-name">Al-Mansouri Family Trust</div><div class="lead-source">Dubai HNWI</div></div>
+                  <span class="badge badge-sold">Sold</span>
+                </div>
+                <div class="lead-card-meta">
+                  <div class="lead-meta-row"><span class="lead-meta-icon">£</span> Completed: £4.2M</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">💰</span> Commission: £84,000</div>
+                  <div class="lead-meta-row"><span class="lead-meta-icon">✅</span> 14 Mar 2025</div>
+                </div>
+                <div class="lead-card-footer">
+                  <div class="lead-score">
+                    <div class="score-bar"><div class="score-fill high" style="width:100%;"></div></div>
+                    <div class="lead-score-num">100</div>
+                  </div>
+                  <div class="lead-avatar">AD</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PROPERTIES PAGE ═══ -->
+      <div class="page" id="page-properties">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">Portfolio · Listings</div>
+            <h1 class="page-title">Property Portfolio</h1>
+            <div class="page-subtitle">48 active listings · UK & UAE</div>
+          </div>
+          <div class="page-actions">
+            <select class="filter-select">
+              <option>All Markets</option><option>🇬🇧 London</option><option>🇦🇪 Dubai</option><option>🇸🇦 Riyadh</option>
+            </select>
+            <button class="btn btn-secondary btn-sm" onclick="navigateTo('listings-ai')">⚡ AI Generate Listing</button>
+            <button class="btn btn-primary btn-sm" onclick="openModal('new-property-modal')">+ Add Property</button>
+          </div>
+        </div>
+
+        <div class="properties-grid">
+          <!-- Property cards -->
+          <div class="property-card" onclick="openPropertyModal()">
+            <div class="property-image" style="background:linear-gradient(135deg,#1c1c1c,#2a2a2a);">
+              <div class="property-image-placeholder">🏛</div>
+              <div class="property-image-overlay"></div>
+              <div class="property-price-overlay">£4,200,000</div>
+              <div class="property-status-overlay"><span class="badge badge-sold">Sold</span></div>
+            </div>
+            <div class="property-info">
+              <div class="property-address">72 Knightsbridge</div>
+              <div class="property-area">Knightsbridge, London SW1X</div>
+              <div class="property-specs">
+                <div class="spec-item">🛏 5 bed</div>
+                <div class="spec-item">🚿 4 bath</div>
+                <div class="spec-item">📐 3,200 sq ft</div>
+              </div>
+            </div>
+            <div class="property-footer">
+              <div class="property-agent"><div class="agent-dot">JW</div> James Wilson</div>
+              <div style="font-size:11px;color:var(--text-dim);">AI Listed · 14 Mar</div>
+            </div>
+          </div>
+
+          <div class="property-card" onclick="openPropertyModal()">
+            <div class="property-image" style="background:linear-gradient(135deg,#222218,#2e2e24);">
+              <div class="property-image-placeholder">🏰</div>
+              <div class="property-image-overlay"></div>
+              <div class="property-price-overlay">£2,850,000</div>
+              <div class="property-status-overlay"><span class="badge badge-live">Live</span></div>
+            </div>
+            <div class="property-info">
+              <div class="property-address">14 Elm Park Gardens</div>
+              <div class="property-area">Chelsea, London SW10</div>
+              <div class="property-specs">
+                <div class="spec-item">🛏 4 bed</div>
+                <div class="spec-item">🚿 3 bath</div>
+                <div class="spec-item">📐 2,400 sq ft</div>
+              </div>
+            </div>
+            <div class="property-footer">
+              <div class="property-agent"><div class="agent-dot">SR</div> Sophia Reed</div>
+              <div style="font-size:11px;color:var(--text-dim);">AI Listed · 2 viewings</div>
+            </div>
+          </div>
+
+          <div class="property-card">
+            <div class="property-image" style="background:linear-gradient(135deg,#181e1c,#212926);">
+              <div class="property-image-placeholder">🌆</div>
+              <div class="property-image-overlay"></div>
+              <div class="property-price-overlay">AED 18,500,000</div>
+              <div class="property-status-overlay"><span class="badge badge-live">Live</span></div>
+            </div>
+            <div class="property-info">
+              <div class="property-address">Palm Jumeirah Villa, Unit 7</div>
+              <div class="property-area">Palm Jumeirah, Dubai 🇦🇪</div>
+              <div class="property-specs">
+                <div class="spec-item">🛏 6 bed</div>
+                <div class="spec-item">🚿 7 bath</div>
+                <div class="spec-item">📐 8,900 sq ft</div>
+              </div>
+            </div>
+            <div class="property-footer">
+              <div class="property-agent"><div class="agent-dot">AM</div> Amira Mansour</div>
+              <div style="font-size:11px;color:var(--text-dim);">AR/EN listed · 5 enquiries</div>
+            </div>
+          </div>
+
+          <div class="property-card">
+            <div class="property-image" style="background:linear-gradient(135deg,#1e1c22,#28252e);">
+              <div class="property-image-placeholder">🏙</div>
+              <div class="property-image-overlay"></div>
+              <div class="property-price-overlay">£1,450,000</div>
+              <div class="property-status-overlay"><span class="badge badge-pending">Under Offer</span></div>
+            </div>
+            <div class="property-info">
+              <div class="property-address">8 Kensington Palace Gardens</div>
+              <div class="property-area">Kensington, London W8</div>
+              <div class="property-specs">
+                <div class="spec-item">🛏 3 bed</div>
+                <div class="spec-item">🚿 2 bath</div>
+                <div class="spec-item">📐 1,800 sq ft</div>
+              </div>
+            </div>
+            <div class="property-footer">
+              <div class="property-agent"><div class="agent-dot">AD</div> Alexandra D.</div>
+              <div style="font-size:11px;color:var(--text-dim);">Brochure auto-generated</div>
+            </div>
+          </div>
+
+          <div class="property-card">
+            <div class="property-image" style="background:linear-gradient(135deg,#1a201e,#222b28);">
+              <div class="property-image-placeholder">🌴</div>
+              <div class="property-image-overlay"></div>
+              <div class="property-price-overlay">SAR 12,000,000</div>
+              <div class="property-status-overlay"><span class="badge badge-live">Live</span></div>
+            </div>
+            <div class="property-info">
+              <div class="property-address">Al Nakheel Villa Complex</div>
+              <div class="property-area">Riyadh, Saudi Arabia 🇸🇦</div>
+              <div class="property-specs">
+                <div class="spec-item">🛏 5 bed</div>
+                <div class="spec-item">🚿 5 bath</div>
+                <div class="spec-item">📐 6,200 sq ft</div>
+              </div>
+            </div>
+            <div class="property-footer">
+              <div class="property-agent"><div class="agent-dot">AM</div> Amira Mansour</div>
+              <div style="font-size:11px;color:var(--text-dim);">Vision 2030 district</div>
+            </div>
+          </div>
+
+          <div class="property-card">
+            <div class="property-image" style="background:linear-gradient(135deg,#1e1c18,#28261e);">
+              <div class="property-image-placeholder">🏗</div>
+              <div class="property-image-overlay"></div>
+              <div class="property-price-overlay">£750,000</div>
+              <div class="property-status-overlay"><span class="badge badge-draft">Draft</span></div>
+            </div>
+            <div class="property-info">
+              <div class="property-address">32 Bermondsey Street</div>
+              <div class="property-area">Bermondsey, London SE1</div>
+              <div class="property-specs">
+                <div class="spec-item">🛏 2 bed</div>
+                <div class="spec-item">🚿 2 bath</div>
+                <div class="spec-item">📐 1,100 sq ft</div>
+              </div>
+            </div>
+            <div class="property-footer">
+              <div class="property-agent"><div class="agent-dot">TK</div> Tom K.</div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();navigateTo('listings-ai')">⚡ AI Generate</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ CLIENTS PAGE ═══ -->
+      <div class="page" id="page-clients">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">CRM · Clients</div>
+            <h1 class="page-title">Client Profiles</h1>
+            <div class="page-subtitle">84 active clients · Automated workflow management</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">⬇ Export</button>
+            <button class="btn btn-primary btn-sm" onclick="openModal('new-client-modal')">+ New Client</button>
+          </div>
+        </div>
+
+        <!-- Workflow stages -->
+        <div class="workflow-stages">
+          <div class="workflow-stage complete" onclick="filterWorkflow(this)">
+            <div class="wf-num">01</div>
+            <div class="wf-name">Onboarding</div>
+            <div class="wf-check">✓</div>
+          </div>
+          <div class="workflow-stage active" onclick="filterWorkflow(this)">
+            <div class="wf-num">02</div>
+            <div class="wf-name">AML / KYC</div>
+          </div>
+          <div class="workflow-stage" onclick="filterWorkflow(this)">
+            <div class="wf-num">03</div>
+            <div class="wf-name">Property Match</div>
+          </div>
+          <div class="workflow-stage" onclick="filterWorkflow(this)">
+            <div class="wf-num">04</div>
+            <div class="wf-name">Viewings</div>
+          </div>
+          <div class="workflow-stage" onclick="filterWorkflow(this)">
+            <div class="wf-num">05</div>
+            <div class="wf-name">Offer & Legal</div>
+          </div>
+          <div class="workflow-stage" onclick="filterWorkflow(this)">
+            <div class="wf-num">06</div>
+            <div class="wf-name">Completion</div>
+          </div>
+          <div class="workflow-stage" onclick="filterWorkflow(this)">
+            <div class="wf-num">07</div>
+            <div class="wf-name">After-Sales</div>
+          </div>
+        </div>
+
+        <div class="data-table-wrap">
+          <div class="table-header">
+            <div class="table-title">All Clients</div>
+            <div class="table-tools">
+              <input class="search-input" placeholder="Search clients...">
+              <select class="filter-select">
+                <option>All Status</option>
+                <option>Active</option>
+                <option>Onboarding</option>
+                <option>Completed</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead><tr>
+              <th>Client</th><th>Origin</th><th>Budget</th><th>Stage</th><th>AML Status</th><th>Agent</th><th>Last Contact</th><th></th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td><div style="font-weight:500;color:var(--cream);">Khalid Al-Mansouri</div><div style="font-size:11px;color:var(--text-dim);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c5aeada4a9aca185a4a9a8a4abb6aab0b7aceba4a0">[email&#160;protected]</a></div></td>
+                <td><span style="font-size:12px;">🇦🇪 Dubai</span></td>
+                <td style="color:var(--gold-light);font-family:'Playfair Display',serif;">£2.5M+</td>
+                <td><span class="badge badge-qualified">AML / KYC</span></td>
+                <td><span class="badge badge-pending">In Review</span></td>
+                <td style="font-size:12px;">James W.</td>
+                <td style="font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace;">2h ago</td>
+                <td><button class="btn btn-secondary btn-sm" onclick="openClientModal()">View</button></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:500;color:var(--cream);">Mohammed Al-Farsi</div><div style="font-size:11px;color:var(--text-dim);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="88e5a6e9e4eee9fafbe1c8e1e6feedfbfca6e9ed">[email&#160;protected]</a></div></td>
+                <td><span style="font-size:12px;">🇦🇪 Abu Dhabi</span></td>
+                <td style="color:var(--gold-light);font-family:'Playfair Display',serif;">£5M+</td>
+                <td><span class="badge badge-active">Property Match</span></td>
+                <td><span class="badge badge-qualified">Cleared</span></td>
+                <td style="font-size:12px;">James W.</td>
+                <td style="font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace;">1d ago</td>
+                <td><button class="btn btn-secondary btn-sm" onclick="openClientModal()">View</button></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:500;color:var(--cream);">Sarah Mitchell</div><div style="font-size:11px;color:var(--text-dim);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5b283a293a3375361b3c363a323775383436">[email&#160;protected]</a></div></td>
+                <td><span style="font-size:12px;">🇬🇧 UK</span></td>
+                <td style="color:var(--gold-light);font-family:'Playfair Display',serif;">£850K</td>
+                <td><span class="badge badge-active">Viewings</span></td>
+                <td><span class="badge badge-qualified">Cleared</span></td>
+                <td style="font-size:12px;">Sophia R.</td>
+                <td style="font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace;">5h ago</td>
+                <td><button class="btn btn-secondary btn-sm" onclick="openClientModal()">View</button></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:500;color:var(--cream);">Ahmed Hassan</div><div style="font-size:11px;color:var(--text-dim);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="22434a4f47460c4a624b4c544751560c5143">[email&#160;protected]</a></div></td>
+                <td><span style="font-size:12px;">🇸🇦 Riyadh</span></td>
+                <td style="color:var(--gold-light);font-family:'Playfair Display',serif;">£1.2M</td>
+                <td><span class="badge badge-pending">AML / KYC</span></td>
+                <td><span class="badge badge-hot">⚠ PEP Flagged</span></td>
+                <td style="font-size:12px;">Alexandra D.</td>
+                <td style="font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace;">3h ago</td>
+                <td><button class="btn btn-danger btn-sm">Review</button></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:500;color:var(--cream);">Emma & James Thornton</div><div style="font-size:11px;color:var(--text-dim);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7004181f021e041f1e033016111d191c095e131f5e051b">[email&#160;protected]</a></div></td>
+                <td><span style="font-size:12px;">🇬🇧 UK</span></td>
+                <td style="color:var(--gold-light);font-family:'Playfair Display',serif;">£1.2M</td>
+                <td><span class="badge badge-active">Offer & Legal</span></td>
+                <td><span class="badge badge-qualified">Cleared</span></td>
+                <td style="font-size:12px;">Alexandra D.</td>
+                <td style="font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace;">Yesterday</td>
+                <td><button class="btn btn-secondary btn-sm" onclick="openClientModal()">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ AI TOOLS PAGE ═══ -->
+      <div class="page" id="page-ai-tools">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">Intelligence · Automation</div>
+            <h1 class="page-title">AI Suite</h1>
+            <div class="page-subtitle">6 active AI engines · 2,847 actions this month</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">📊 Usage Report</button>
+          </div>
+        </div>
+
+        <div class="ai-tools-grid">
+          <div class="ai-tool-card" onclick="openAITool('lead')">
+            <span class="ai-tool-icon">🎯</span>
+            <div class="ai-tool-name">Lead Qualifier AI</div>
+            <div class="ai-tool-desc">Instantly scores and qualifies all inbound leads. Connects to Rightmove, Zoopla, Property Finder & WhatsApp. Responds in English or Arabic.</div>
+            <div class="ai-tool-usage">
+              <div class="usage-bar-wrap">
+                <div style="font-size:9px;color:var(--text-dim);margin-bottom:4px;">This month</div>
+                <div class="usage-bar"><div class="usage-fill" style="width:78%;"></div></div>
+              </div>
+              <div class="usage-label">784 leads</div>
+            </div>
+          </div>
+          <div class="ai-tool-card" onclick="openAITool('listing')">
+            <span class="ai-tool-icon">✍️</span>
+            <div class="ai-tool-name">Listing Generator AI</div>
+            <div class="ai-tool-desc">Generate professional EN/AR property listings, brochures & social content from basic notes. SEO-optimised for Rightmove and Bayut.</div>
+            <div class="ai-tool-usage">
+              <div class="usage-bar-wrap">
+                <div style="font-size:9px;color:var(--text-dim);margin-bottom:4px;">This month</div>
+                <div class="usage-bar"><div class="usage-fill" style="width:55%;"></div></div>
+              </div>
+              <div class="usage-label">48 listings</div>
+            </div>
+          </div>
+          <div class="ai-tool-card" onclick="openAITool('contract')">
+            <span class="ai-tool-icon">📋</span>
+            <div class="ai-tool-name">Contract Assistant AI</div>
+            <div class="ai-tool-desc">Draft and review offer letters, heads of terms, and tenancy agreements. Flags non-standard clauses and compliance issues automatically.</div>
+            <div class="ai-tool-usage">
+              <div class="usage-bar-wrap">
+                <div style="font-size:9px;color:var(--text-dim);margin-bottom:4px;">This month</div>
+                <div class="usage-bar"><div class="usage-fill" style="width:42%;"></div></div>
+              </div>
+              <div class="usage-label">31 documents</div>
+            </div>
+          </div>
+          <div class="ai-tool-card" onclick="openAITool('aml')">
+            <span class="ai-tool-icon">🛡</span>
+            <div class="ai-tool-name">AML / KYC Screener</div>
+            <div class="ai-tool-desc">Automated PEP and sanctions screening. Integrates with Experian, Companies House, and UAE Central Bank watchlists. MLRO escalation workflow.</div>
+            <div class="ai-tool-usage">
+              <div class="usage-bar-wrap">
+                <div style="font-size:9px;color:var(--text-dim);margin-bottom:4px;">This month</div>
+                <div class="usage-bar"><div class="usage-fill" style="width:30%;background:var(--rose);"></div></div>
+              </div>
+              <div class="usage-label">24 checks</div>
+            </div>
+          </div>
+          <div class="ai-tool-card" onclick="openAITool('valuation')">
+            <span class="ai-tool-icon">📊</span>
+            <div class="ai-tool-name">Valuation AI</div>
+            <div class="ai-tool-desc">AI-powered property valuations using Land Registry, DLD data, local comparables and market trend modelling. Generates instant CMA reports.</div>
+            <div class="ai-tool-usage">
+              <div class="usage-bar-wrap">
+                <div style="font-size:9px;color:var(--text-dim);margin-bottom:4px;">This month</div>
+                <div class="usage-bar"><div class="usage-fill" style="width:65%;background:var(--sapphire);"></div></div>
+              </div>
+              <div class="usage-label">52 valuations</div>
+            </div>
+          </div>
+          <div class="ai-tool-card" onclick="openAITool('whatsapp')">
+            <span class="ai-tool-icon">💬</span>
+            <div class="ai-tool-name">WhatsApp AI Agent</div>
+            <div class="ai-tool-desc">24/7 bilingual AI agent on WhatsApp Business. Qualifies leads, books viewings, answers property FAQs in real-time. Escalates to humans when needed.</div>
+            <div class="ai-tool-usage">
+              <div class="usage-bar-wrap">
+                <div style="font-size:9px;color:var(--text-dim);margin-bottom:4px;">This month</div>
+                <div class="usage-bar"><div class="usage-fill" style="width:90%;background:var(--emerald);"></div></div>
+              </div>
+              <div class="usage-label">1,241 messages</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Chat Interface -->
+        <div class="ai-interface" id="ai-chat">
+          <div class="ai-interface-header">
+            <div class="ai-status"><div class="ai-dot"></div> APEX AI · Lead Qualifier</div>
+            <div style="margin-left:auto;display:flex;gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="clearChat()">Clear</button>
+              <select class="filter-select" onchange="changeAITool(this.value)">
+                <option value="lead">🎯 Lead Qualifier</option>
+                <option value="listing">✍️ Listing Generator</option>
+                <option value="contract">📋 Contract Assistant</option>
+                <option value="aml">🛡 AML Screener</option>
+                <option value="valuation">📊 Valuation AI</option>
+              </select>
+            </div>
+          </div>
+          <div class="ai-messages" id="ai-messages">
+            <div class="ai-message assistant">
+              <div class="ai-sender">APEX AI · Lead Qualifier</div>
+              <div class="ai-bubble">Hello! I'm your Lead Qualifier AI. Share a lead enquiry — I'll score it, extract key info (budget, timeline, property type), and suggest the next best action. You can also paste a WhatsApp message or Rightmove enquiry directly.</div>
+            </div>
+          </div>
+          <div class="ai-input-row">
+            <input class="ai-input" id="ai-input" placeholder="Paste a lead enquiry or ask me anything..." onkeydown="if(event.key==='Enter')sendAIMessage()">
+            <button class="btn btn-primary" onclick="sendAIMessage()">Send ↵</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ LISTINGS AI PAGE ═══ -->
+      <div class="page" id="page-listings-ai">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">AI Suite · Content</div>
+            <h1 class="page-title">Listing Generator AI</h1>
+            <div class="page-subtitle">Generate bilingual EN/AR property listings in seconds</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div>
+            <div class="chart-card" style="margin-bottom:16px;">
+              <div class="chart-header" style="margin-bottom:16px;">
+                <div class="chart-title">Property Details</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Property Address</label>
+                <input class="form-input" id="listing-address" placeholder="e.g. 24 Eaton Square, Belgravia, SW1W">
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="form-group">
+                  <label class="form-label">Price</label>
+                  <input class="form-input" id="listing-price" placeholder="£3,500,000">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Market</label>
+                  <select class="form-input filter-select">
+                    <option>🇬🇧 UK — Rightmove/Zoopla</option>
+                    <option>🇦🇪 UAE — Bayut/PF</option>
+                    <option>🇸🇦 Saudi — Aqar</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                <div class="form-group">
+                  <label class="form-label">Bedrooms</label>
+                  <input class="form-input" id="listing-beds" placeholder="4" type="number">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Bathrooms</label>
+                  <input class="form-input" id="listing-baths" placeholder="3" type="number">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Sq Ft</label>
+                  <input class="form-input" id="listing-sqft" placeholder="2400">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Key Features (bullet points or notes)</label>
+                <textarea class="form-input" id="listing-notes" rows="4" placeholder="- Period property, 1890s townhouse&#10;- Recently refurbished kitchen&#10;- Private garden, 60ft south-facing&#10;- Off-street parking&#10;- Excellent school catchment" style="resize:vertical;"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tone</label>
+                <div style="display:flex;gap:8px;">
+                  <button class="role-btn active" style="flex:1;" onclick="this.parentElement.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Luxury</button>
+                  <button class="role-btn" style="flex:1;" onclick="this.parentElement.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Professional</button>
+                  <button class="role-btn" style="flex:1;" onclick="this.parentElement.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Concise</button>
+                </div>
+              </div>
+              <button class="btn btn-primary" style="width:100%;" onclick="generateListing()">⚡ Generate Listing (EN + AR)</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="chart-card" style="height:100%;">
+              <div class="chart-header" style="margin-bottom:16px;">
+                <div class="chart-title">Generated Output</div>
+                <div style="display:flex;gap:8px;">
+                  <button class="btn btn-secondary btn-sm" id="copy-listing" onclick="copyListing()" style="display:none;">📋 Copy</button>
+                  <button class="btn btn-primary btn-sm" id="save-listing" onclick="showToast('Listing saved to portfolio!','success')" style="display:none;">💾 Save</button>
+                </div>
+              </div>
+              <div id="listing-output" style="min-height:400px;color:var(--text-dim);font-size:13px;line-height:1.8;">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:400px;gap:16px;opacity:0.5;">
+                  <span style="font-size:40px;">✍️</span>
+                  <span>Fill in the property details and click Generate</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ STAFF PAGE ═══ -->
+      <div class="page" id="page-staff">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">Team · Roles</div>
+            <h1 class="page-title">Staff & Permissions</h1>
+            <div class="page-subtitle">8 team members · 4 roles · UK & UAE offices</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm" onclick="navigateTo('security')">🔐 Permissions</button>
+            <button class="btn btn-primary btn-sm" onclick="openModal('invite-staff-modal')">+ Invite Staff</button>
+          </div>
+        </div>
+
+        <div class="staff-grid">
+          <div class="staff-card">
+            <div class="staff-card-header">
+              <div class="staff-avatar">AD</div>
+              <div>
+                <div class="staff-name">Alexandra Davies</div>
+                <div class="staff-role">Super Admin · Director</div>
+                <div class="staff-online"><div class="status-dot"></div> Online now</div>
+              </div>
+            </div>
+            <div class="staff-card-body">
+              <div class="staff-stat-row">
+                <div class="staff-stat"><div class="staff-stat-val">14</div><div class="staff-stat-label">Active Leads</div></div>
+                <div class="staff-stat"><div class="staff-stat-val">£485K</div><div class="staff-stat-label">Pipeline</div></div>
+                <div class="staff-stat"><div class="staff-stat-val">94%</div><div class="staff-stat-label">Conversion</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--text-dim);">London HQ · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="17767b726f7679736576577667726f767e39747839627c">[email&#160;protected]</a></div>
+            </div>
+            <div class="staff-card-footer">
+              <button class="btn btn-secondary btn-sm" style="flex:1;">Message</button>
+              <button class="btn btn-ghost btn-sm">⚙ Edit</button>
+            </div>
+          </div>
+
+          <div class="staff-card">
+            <div class="staff-card-header">
+              <div class="staff-avatar" style="background:linear-gradient(135deg,#2a2a2a,#3a3a3a);">JW</div>
+              <div>
+                <div class="staff-name">James Wilson</div>
+                <div class="staff-role">Senior Agent</div>
+                <div class="staff-online"><div class="status-dot"></div> Online now</div>
+              </div>
+            </div>
+            <div class="staff-card-body">
+              <div class="staff-stat-row">
+                <div class="staff-stat"><div class="staff-stat-val">22</div><div class="staff-stat-label">Active Leads</div></div>
+                <div class="staff-stat"><div class="staff-stat-val">£1.2M</div><div class="staff-stat-label">Pipeline</div></div>
+                <div class="staff-stat"><div class="staff-stat-val">87%</div><div class="staff-stat-label">Conversion</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--text-dim);">London · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="513b303c3422113021342930387f323e7f243a">[email&#160;protected]</a></div>
+            </div>
+            <div class="staff-card-footer">
+              <button class="btn btn-secondary btn-sm" style="flex:1;">Message</button>
+              <button class="btn btn-ghost btn-sm">⚙ Edit</button>
+            </div>
+          </div>
+
+          <div class="staff-card">
+            <div class="staff-card-header">
+              <div class="staff-avatar" style="background:linear-gradient(135deg,#252525,#353535);">SR</div>
+              <div>
+                <div class="staff-name">Sophia Reed</div>
+                <div class="staff-role">Senior Agent</div>
+                <div class="staff-online" style="color:var(--text-dim);"><div class="status-dot" style="background:var(--text-dim)"></div> Away — viewing</div>
+              </div>
+            </div>
+            <div class="staff-card-body">
+              <div class="staff-stat-row">
+                <div class="staff-stat"><div class="staff-stat-val">18</div><div class="staff-stat-label">Active Leads</div></div>
+                <div class="staff-stat"><div class="staff-stat-val">£920K</div><div class="staff-stat-label">Pipeline</div></div>
+                <div class="staff-stat"><div class="staff-stat-val">82%</div><div class="staff-stat-label">Conversion</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--text-dim);">London · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9cad6c9d1d0d8f9d8c9dcc1d8d097dad697ccd2">[email&#160;protected]</a></div>
+            </div>
+            <div class="staff-card-footer">
+              <button class="btn btn-secondary btn-sm" style="flex:1;">Message</button>
+              <button class="btn btn-ghost btn-sm">⚙ Edit</button>
+            </div>
+          </div>
+
+          <div class="staff-card">
+            <div class="staff-card-header">
+              <div class="staff-avatar" style="background:linear-gradient(135deg,#2a2620,#3a3428);">AM</div>
+              <div>
+                <div class="staff-name">Amira Mansour</div>
+                <div class="staff-role">ME Operations Lead</div>
+                <div class="staff-online"><div class="status-dot"></div> Dubai office</div>
+              </div>
+            </div>
+            <div class="staff-card-body">
+              <div class="staff-stat-row">
+                <div class="staff-stat"><div class="staff-stat-val">31</div><div class="staff-stat-label">Active Leads</div></div>
+                <div class="staff-stat"><div class="staff-stat-val">£2.1M</div><div class="staff-stat-label">Pipeline</div></div>
+                <div class="staff-stat"><div class="staff-stat-val">91%</div><div class="staff-stat-label">Conversion</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--text-dim);">Dubai 🇦🇪 · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e584888c9784a58495809d848ccb8480">[email&#160;protected]</a></div>
+            </div>
+            <div class="staff-card-footer">
+              <button class="btn btn-secondary btn-sm" style="flex:1;">Message</button>
+              <button class="btn btn-ghost btn-sm">⚙ Edit</button>
+            </div>
+          </div>
+
+          <div class="staff-card">
+            <div class="staff-card-header">
+              <div class="staff-avatar" style="background:linear-gradient(135deg,#202020,#303030);">TK</div>
+              <div>
+                <div class="staff-name">Tom Keating</div>
+                <div class="staff-role">Junior Agent</div>
+                <div class="staff-online"><div class="status-dot"></div> Online now</div>
+              </div>
+            </div>
+            <div class="staff-card-body">
+              <div class="staff-stat-row">
+                <div class="staff-stat"><div class="staff-stat-val">9</div><div class="staff-stat-label">Active Leads</div></div>
+                <div class="staff-stat"><div class="staff-stat-val">£340K</div><div class="staff-stat-label">Pipeline</div></div>
+                <div class="staff-stat"><div class="staff-stat-val">61%</div><div class="staff-stat-label">Conversion</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--text-dim);">London · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="baced5d7fadbcadfc2dbd394d9d594cfd1">[email&#160;protected]</a></div>
+            </div>
+            <div class="staff-card-footer">
+              <button class="btn btn-secondary btn-sm" style="flex:1;">Message</button>
+              <button class="btn btn-ghost btn-sm">⚙ Edit</button>
+            </div>
+          </div>
+
+          <div class="staff-card" style="border-style:dashed;cursor:pointer;" onclick="openModal('invite-staff-modal')">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:12px;opacity:0.4;">
+              <div style="font-size:32px;">+</div>
+              <div style="font-size:13px;color:var(--text-dim);">Invite Team Member</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ INTEGRATIONS PAGE ═══ -->
+      <div class="page" id="page-integrations">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">Platform · Connections</div>
+            <h1 class="page-title">Integrations</h1>
+            <div class="page-subtitle">14 active · 4 available · Real-time sync</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">+ Browse Marketplace</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:24px;">
+          <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Property Portals</div>
+          <div class="integrations-grid">
+            <div class="integration-card">
+              <div class="integration-logo">🏠</div>
+              <div class="integration-info">
+                <div class="integration-name">Rightmove</div>
+                <div class="integration-desc">Auto-sync listings, pull enquiries, update status in real-time</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap">
+                    <div class="toggle on" onclick="toggleInt(this)"></div>
+                    <div class="toggle-label">Live sync</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="integration-card">
+              <div class="integration-logo">🏡</div>
+              <div class="integration-info">
+                <div class="integration-name">Zoopla</div>
+                <div class="integration-desc">Lead import, listing management, enquiry routing</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap">
+                    <div class="toggle on" onclick="toggleInt(this)"></div>
+                    <div class="toggle-label">Live sync</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="integration-card">
+              <div class="integration-logo">🌴</div>
+              <div class="integration-info">
+                <div class="integration-name">Bayut (UAE)</div>
+                <div class="integration-desc">Dubai & UAE listings, Arabic enquiry routing</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap">
+                    <div class="toggle on" onclick="toggleInt(this)"></div>
+                    <div class="toggle-label">Live sync</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="integration-card">
+              <div class="integration-logo">🌟</div>
+              <div class="integration-info">
+                <div class="integration-name">Property Finder</div>
+                <div class="integration-desc">UAE & KSA listings with lead qualification flow</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap">
+                    <div class="toggle on" onclick="toggleInt(this)"></div>
+                    <div class="toggle-label">Live sync</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:24px;">
+          <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">CRM & Communication</div>
+          <div class="integrations-grid">
+            <div class="integration-card">
+              <div class="integration-logo">💼</div>
+              <div class="integration-info">
+                <div class="integration-name">HubSpot CRM</div>
+                <div class="integration-desc">Bi-directional sync: contacts, deals, pipelines, notes</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap"><div class="toggle on" onclick="toggleInt(this)"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="integration-card">
+              <div class="integration-logo">💬</div>
+              <div class="integration-info">
+                <div class="integration-name">WhatsApp Business API</div>
+                <div class="integration-desc">AI-powered bilingual agent, automated follow-ups</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap"><div class="toggle on" onclick="toggleInt(this)"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="integration-card">
+              <div class="integration-logo">📧</div>
+              <div class="integration-info">
+                <div class="integration-name">Gmail / Outlook</div>
+                <div class="integration-desc">Email tracking, auto-sequencing, template management</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap"><div class="toggle on" onclick="toggleInt(this)"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="integration-card">
+              <div class="integration-logo">📞</div>
+              <div class="integration-info">
+                <div class="integration-name">Twilio (SMS/Calls)</div>
+                <div class="integration-desc">SMS alerts, call recording, IVR routing</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap"><div class="toggle on" onclick="toggleInt(this)"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:24px;">
+          <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Data & Compliance</div>
+          <div class="integrations-grid">
+            <div class="integration-card">
+              <div class="integration-logo">🏛</div>
+              <div class="integration-info">
+                <div class="integration-name">UK Land Registry</div>
+                <div class="integration-desc">Price paid data, title information, valuation support</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap"><div class="toggle on" onclick="toggleInt(this)"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="integration-card">
+              <div class="integration-logo">🇦🇪</div>
+              <div class="integration-info">
+                <div class="integration-name">Dubai Land Dept (DLD)</div>
+                <div class="integration-desc">UAE transaction data, RERA compliance, title deeds</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap"><div class="toggle on" onclick="toggleInt(this)"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="integration-card">
+              <div class="integration-logo">🔍</div>
+              <div class="integration-info">
+                <div class="integration-name">Experian AML</div>
+                <div class="integration-desc">PEP screening, sanctions lists, identity verification</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap"><div class="toggle on" onclick="toggleInt(this)"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="integration-card">
+              <div class="integration-logo">🏢</div>
+              <div class="integration-info">
+                <div class="integration-name">Companies House</div>
+                <div class="integration-desc">Corporate buyer verification, beneficial ownership</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap"><div class="toggle on" onclick="toggleInt(this)"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Finance & Payments</div>
+          <div class="integrations-grid">
+            <div class="integration-card">
+              <div class="integration-logo">💳</div>
+              <div class="integration-info">
+                <div class="integration-name">Stripe</div>
+                <div class="integration-desc">Client retainers, holding deposits, payment links</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap"><div class="toggle on" onclick="toggleInt(this)"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="integration-card">
+              <div class="integration-logo">🌍</div>
+              <div class="integration-info">
+                <div class="integration-name">Wise Business</div>
+                <div class="integration-desc">GBP/AED/SAR invoicing, international fee collection</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap"><div class="toggle on" onclick="toggleInt(this)"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="integration-card">
+              <div class="integration-logo">📄</div>
+              <div class="integration-info">
+                <div class="integration-name">DocuSign</div>
+                <div class="integration-desc">E-signatures for contracts, offers, compliance docs</div>
+                <div class="integration-status">
+                  <span class="badge badge-pending">Setup required</span>
+                  <button class="btn btn-primary btn-sm" onclick="showToast('Opening DocuSign setup...','info')">Connect</button>
+                </div>
+              </div>
+            </div>
+            <div class="integration-card">
+              <div class="integration-logo">🔧</div>
+              <div class="integration-info">
+                <div class="integration-name">n8n Automation</div>
+                <div class="integration-desc">Custom workflow engine — connects all tools via webhooks</div>
+                <div class="integration-status">
+                  <span class="badge badge-active">Connected</span>
+                  <div class="toggle-wrap"><div class="toggle on" onclick="toggleInt(this)"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECURITY PAGE ═══ -->
+      <div class="page" id="page-security">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">Platform · Security</div>
+            <h1 class="page-title">Security Centre</h1>
+            <div class="page-subtitle">Enterprise-grade protection · GDPR · ISO 27001 compliant</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm" onclick="showToast('Generating security audit report...','info')">⬇ Audit Report</button>
+          </div>
+        </div>
+
+        <!-- Security score -->
+        <div style="background:var(--navy-2);border:1px solid var(--border-gold);padding:24px;margin-bottom:20px;display:flex;align-items:center;gap:32px;">
+          <div style="text-align:center;flex-shrink:0;">
+            <div style="font-family:'Playfair Display',serif;font-size:52px;color:var(--gold-light);line-height:1;">96</div>
+            <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.15em;">Security Score</div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--cream);margin-bottom:6px;">Platform Status: Secure</div>
+            <div style="font-size:12px;color:var(--text-dim);margin-bottom:14px;">All critical systems operational. 1 advisory recommendation pending.</div>
+            <div style="display:flex;gap:20px;flex-wrap:wrap;">
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--emerald);">✓ 2FA Enforced</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--emerald);">✓ AES-256 Encryption</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--emerald);">✓ GDPR Compliant</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--emerald);">✓ SOC 2 Type II</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--amber);">⚠ DocuSign setup pending</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="security-grid">
+          <!-- Audit log -->
+          <div class="security-card">
+            <div class="security-card-title">Audit Log</div>
+            <div class="security-card-desc">All user actions and system events — last 24 hours</div>
+            <div class="audit-list">
+              <div class="audit-item">
+                <div class="audit-icon success">✓</div>
+                <div class="audit-info">
+                  <div class="audit-action">Alexandra Davies signed in</div>
+                  <div class="audit-meta">2FA verified · London, UK · Chrome 122</div>
+                </div>
+                <div class="audit-time">09:14</div>
+              </div>
+              <div class="audit-item">
+                <div class="audit-icon info">📋</div>
+                <div class="audit-info">
+                  <div class="audit-action">Lead record viewed: Khalid Al-Mansouri</div>
+                  <div class="audit-meta">James Wilson · IP: 82.x.x.x</div>
+                </div>
+                <div class="audit-time">09:22</div>
+              </div>
+              <div class="audit-item">
+                <div class="audit-icon warning">⚠</div>
+                <div class="audit-info">
+                  <div class="audit-action">AML alert raised: Ahmed Hassan — PEP detected</div>
+                  <div class="audit-meta">Automated · Experian integration · Escalated to MLRO</div>
+                </div>
+                <div class="audit-time">09:45</div>
+              </div>
+              <div class="audit-item">
+                <div class="audit-icon info">📤</div>
+                <div class="audit-info">
+                  <div class="audit-action">Client data exported: Sarah Mitchell</div>
+                  <div class="audit-meta">Sophia Reed · GDPR basis: Legitimate interest</div>
+                </div>
+                <div class="audit-time">10:12</div>
+              </div>
+              <div class="audit-item">
+                <div class="audit-icon success">✓</div>
+                <div class="audit-info">
+                  <div class="audit-action">DocuSign contract sent: 14 Elm Park Gardens</div>
+                  <div class="audit-meta">Alexandra Davies → <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0c7864637e627863627f4c6a6d61656075226f63227967">[email&#160;protected]</a></div>
+                </div>
+                <div class="audit-time">10:55</div>
+              </div>
+              <div class="audit-item">
+                <div class="audit-icon danger">✕</div>
+                <div class="audit-info">
+                  <div class="audit-action">Failed login attempt: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cbbea5a0a5a4bca58ba3aaa8a0aeb9e5b9be">[email&#160;protected]</a></div>
+                  <div class="audit-meta">Blocked · IP blacklisted · Alert sent to admin</div>
+                </div>
+                <div class="audit-time">11:03</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role permissions -->
+          <div class="security-card">
+            <div class="security-card-title">Role Permissions Matrix</div>
+            <div class="security-card-desc">Access control by role across platform features</div>
+            <div class="perm-role-header" style="padding-left:180px;">
+              <div class="perm-role-label">Admin</div>
+              <div class="perm-role-label">Sr Agent</div>
+              <div class="perm-role-label">Jr Agent</div>
+              <div class="perm-role-label">Client</div>
+            </div>
+            <div class="perm-table">
+              <div class="perm-row">
+                <div class="perm-feature">View all leads</div>
+                <div class="perm-checks">
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                </div>
+              </div>
+              <div class="perm-row">
+                <div class="perm-feature">Access AML reports</div>
+                <div class="perm-checks">
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                </div>
+              </div>
+              <div class="perm-row">
+                <div class="perm-feature">Manage integrations</div>
+                <div class="perm-checks">
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                </div>
+              </div>
+              <div class="perm-row">
+                <div class="perm-feature">Delete records</div>
+                <div class="perm-checks">
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                </div>
+              </div>
+              <div class="perm-row">
+                <div class="perm-feature">Edit own leads</div>
+                <div class="perm-checks">
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                </div>
+              </div>
+              <div class="perm-row">
+                <div class="perm-feature">Use AI tools</div>
+                <div class="perm-checks">
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                </div>
+              </div>
+              <div class="perm-row">
+                <div class="perm-feature">View own portal</div>
+                <div class="perm-checks">
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                </div>
+              </div>
+              <div class="perm-row">
+                <div class="perm-feature">Export data</div>
+                <div class="perm-checks">
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-yes">✓</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                  <div class="perm-check"><span class="check-no">✗</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2FA Management -->
+          <div class="security-card">
+            <div class="security-card-title">Two-Factor Authentication</div>
+            <div class="security-card-desc">All staff must use 2FA. Configured methods below.</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="settings-row">
+                <div><div class="settings-label">Enforce 2FA for all staff</div><div class="settings-sublabel">Mandatory — cannot be disabled</div></div>
+                <div class="toggle on"></div>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">Authenticator App (TOTP)</div><div class="settings-sublabel">Google Auth, Authy — recommended</div></div>
+                <div class="toggle on" onclick="toggleInt(this)"></div>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">SMS Fallback</div><div class="settings-sublabel">UK & UAE numbers supported</div></div>
+                <div class="toggle on" onclick="toggleInt(this)"></div>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">Session duration</div></div>
+                <select class="filter-select"><option>8 hours</option><option>24 hours</option><option>7 days</option></select>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">IP Allowlisting</div><div class="settings-sublabel">Restrict to office IPs</div></div>
+                <div class="toggle" onclick="toggleInt(this)"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data protection -->
+          <div class="security-card">
+            <div class="security-card-title">Data Protection</div>
+            <div class="security-card-desc">GDPR, UAE PDPL, and Saudi PDPL compliance settings</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="settings-row">
+                <div><div class="settings-label">Data Encryption at Rest</div><div class="settings-sublabel">AES-256 · AWS KMS</div></div>
+                <span class="badge badge-active">Active</span>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">Encryption in Transit</div><div class="settings-sublabel">TLS 1.3 · All connections</div></div>
+                <span class="badge badge-active">Active</span>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">Data Retention Policy</div><div class="settings-sublabel">GDPR: 6 years · Auto-delete</div></div>
+                <div class="toggle on" onclick="toggleInt(this)"></div>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">Right to Erasure Requests</div><div class="settings-sublabel">30-day auto-processing</div></div>
+                <span class="badge badge-active">Enabled</span>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">Data Processing Agreement</div><div class="settings-sublabel">ICO registered · DPO assigned</div></div>
+                <span class="badge badge-qualified">Signed</span>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">Penetration Test</div><div class="settings-sublabel">Last: Jan 2025 · CREST certified</div></div>
+                <span class="badge badge-active">Passed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SETTINGS PAGE ═══ -->
+      <div class="page" id="page-settings">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">Platform · Configuration</div>
+            <h1 class="page-title">Settings</h1>
+            <div class="page-subtitle">Agency configuration and platform preferences</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary btn-sm" onclick="showToast('Settings saved successfully','success')">Save Changes</button>
+          </div>
+        </div>
+
+        <div class="settings-layout">
+          <div class="settings-nav">
+            <div class="settings-nav-item active" onclick="settingsNav(this,'general')">Agency Profile</div>
+            <div class="settings-nav-item" onclick="settingsNav(this,'branding')">Branding</div>
+            <div class="settings-nav-item" onclick="settingsNav(this,'notifications')">Notifications</div>
+            <div class="settings-nav-item" onclick="settingsNav(this,'ai')">AI Configuration</div>
+            <div class="settings-nav-item" onclick="settingsNav(this,'billing')">Billing</div>
+            <div class="settings-nav-item" onclick="settingsNav(this,'api')">API & Webhooks</div>
+          </div>
+
+          <div class="settings-panel">
+            <div class="settings-section">
+              <div class="settings-section-title">Agency Profile</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                <div class="form-group">
+                  <label class="form-label">Agency Name</label>
+                  <input class="form-input" value="APEX Intelligence Ltd">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Registration Number</label>
+                  <input class="form-input" value="12345678" placeholder="Companies House No.">
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                <div class="form-group">
+                  <label class="form-label">Primary Market</label>
+                  <select class="form-input filter-select">
+                    <option>UK & Middle East</option>
+                    <option>UK Only</option>
+                    <option>Middle East Only</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Base Currency</label>
+                  <select class="form-input filter-select">
+                    <option>GBP (£)</option>
+                    <option>AED (د.إ)</option>
+                    <option>SAR (﷼)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <div class="settings-section-title">AI Configuration</div>
+              <div class="settings-row">
+                <div><div class="settings-label">Auto-qualify inbound leads</div><div class="settings-sublabel">AI scores and routes leads from all portals</div></div>
+                <div class="toggle on" onclick="toggleInt(this)"></div>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">Arabic language support</div><div class="settings-sublabel">Enables bilingual EN/AR responses</div></div>
+                <div class="toggle on" onclick="toggleInt(this)"></div>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">WhatsApp AI agent</div><div class="settings-sublabel">24/7 automated lead response</div></div>
+                <div class="toggle on" onclick="toggleInt(this)"></div>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">Auto-generate listings</div><div class="settings-sublabel">Draft listings when property is created</div></div>
+                <div class="toggle" onclick="toggleInt(this)"></div>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">AI follow-up sequences</div><div class="settings-sublabel">Automatic email/SMS drip campaigns</div></div>
+                <div class="toggle on" onclick="toggleInt(this)"></div>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <div class="settings-section-title">Compliance Defaults</div>
+              <div class="settings-row">
+                <div><div class="settings-label">Auto-trigger AML on new client</div><div class="settings-sublabel">Starts KYC workflow automatically</div></div>
+                <div class="toggle on" onclick="toggleInt(this)"></div>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">MLRO Notification threshold</div></div>
+                <select class="filter-select"><option>PEP detected</option><option>High risk score</option><option>Manual only</option></select>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-label">UK AML Supervisor</div><div class="settings-sublabel">HMRC Estate Agency supervision</div></div>
+                <span class="badge badge-active">Registered</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ANALYTICS PAGE ═══ -->
+      <div class="page" id="page-analytics">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">Performance · Insights</div>
+            <h1 class="page-title">Analytics</h1>
+            <div class="page-subtitle">Full platform performance across UK & Middle East</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">⬇ Export PDF</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid" style="margin-bottom:20px;">
+          <div class="kpi-card">
+            <div class="kpi-top"><div class="kpi-label">Total Deals YTD</div></div>
+            <div class="kpi-value">31</div>
+            <div class="kpi-delta up">↑ 12 vs last year</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top"><div class="kpi-label">AI Leads Qualified</div></div>
+            <div class="kpi-value">847</div>
+            <div class="kpi-delta up">↑ 340% since launch</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top"><div class="kpi-label">Avg Days to Close</div></div>
+            <div class="kpi-value">42</div>
+            <div class="kpi-delta up">↓ 18 days faster with AI</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top"><div class="kpi-label">ME Revenue Share</div></div>
+            <div class="kpi-value">38%</div>
+            <div class="kpi-delta up">↑ Growing market</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="chart-card">
+            <div class="chart-header"><div class="chart-title">Revenue by Market</div></div>
+            <div class="chart-canvas-wrap"><canvas id="market-chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header"><div class="chart-title">Lead Sources</div></div>
+            <div class="chart-canvas-wrap"><canvas id="source-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ COMPLIANCE PAGE ═══ -->
+      <div class="page" id="page-compliance">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">Legal · Regulatory</div>
+            <h1 class="page-title">Compliance Centre</h1>
+            <div class="page-subtitle">AML/KYC, GDPR, RICS & UAE RERA monitoring</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;">
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-label">AML Checks This Month</div></div><div class="kpi-value">24</div><div class="kpi-delta up">↑ 4 flagged for review</div></div>
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-label">SAR Filed</div></div><div class="kpi-value">1</div><div class="kpi-delta" style="color:var(--amber);">Under review by MLRO</div></div>
+          <div class="kpi-card"><div class="kpi-top"><div class="kpi-label">GDPR Requests</div></div><div class="kpi-value">3</div><div class="kpi-delta up">All resolved within 30 days</div></div>
+        </div>
+        <div class="data-table-wrap">
+          <div class="table-header"><div class="table-title">AML / KYC Case Log</div></div>
+          <table>
+            <thead><tr><th>Client</th><th>Check Type</th><th>Date</th><th>Result</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--cream);">Khalid Al-Mansouri</td><td>PEP + Sanctions</td><td style="font-family:'DM Mono',monospace;font-size:11px;">21 Mar 2025</td><td><span class="badge badge-pending">In Review</span></td><td><button class="btn btn-secondary btn-sm">View Report</button></td></tr>
+              <tr><td style="color:var(--cream);">Ahmed Hassan</td><td>PEP Screen</td><td style="font-family:'DM Mono',monospace;font-size:11px;">20 Mar 2025</td><td><span class="badge badge-hot">⚠ PEP Match</span></td><td><button class="btn btn-danger btn-sm">Escalate</button></td></tr>
+              <tr><td style="color:var(--cream);">Mohammed Al-Farsi</td><td>Full KYC</td><td style="font-family:'DM Mono',monospace;font-size:11px;">15 Mar 2025</td><td><span class="badge badge-qualified">Cleared</span></td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+              <tr><td style="color:var(--cream);">Sarah Mitchell</td><td>Basic ID</td><td style="font-family:'DM Mono',monospace;font-size:11px;">14 Mar 2025</td><td><span class="badge badge-qualified">Cleared</span></td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ WORKFLOWS PAGE ═══ -->
+      <div class="page" id="page-workflows">
+        <div class="page-header">
+          <div class="page-title-group">
+            <div class="page-eyebrow">AI Suite · Automation</div>
+            <h1 class="page-title">Automated Workflows</h1>
+            <div class="page-subtitle">12 active automations running 24/7</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary btn-sm" onclick="showToast('Workflow builder opening...','info')">+ New Workflow</button>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="integration-card" style="flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;gap:16px;padding:4px 0 14px;">
+              <div class="integration-logo">🎯</div>
+              <div style="flex:1;">
+                <div class="integration-name">Lead Auto-Qualification</div>
+                <div class="integration-desc" style="margin-bottom:0;">Rightmove/Zoopla/Bayut → AI Score → CRM → Assign agent → Welcome email/WhatsApp within 90 seconds</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border);">
+              <span class="badge badge-active">Running</span>
+              <span style="font-size:11px;color:var(--text-dim);display:flex;align-items:center;">784 runs this month · Avg 67s response time</span>
+            </div>
+          </div>
+          <div class="integration-card" style="flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;gap:16px;padding:4px 0 14px;">
+              <div class="integration-logo">📅</div>
+              <div style="flex:1;">
+                <div class="integration-name">Viewing Confirmation & Reminder</div>
+                <div class="integration-desc" style="margin-bottom:0;">Booking confirmed → Calendar invite → 24h SMS reminder → 1h WhatsApp reminder → Post-viewing feedback request</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border);">
+              <span class="badge badge-active">Running</span>
+              <span style="font-size:11px;color:var(--text-dim);display:flex;align-items:center;">142 viewings confirmed · 94% show rate</span>
+            </div>
+          </div>
+          <div class="integration-card" style="flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;gap:16px;padding:4px 0 14px;">
+              <div class="integration-logo">🛡</div>
+              <div style="flex:1;">
+                <div class="integration-name">AML / KYC Auto-Trigger</div>
+                <div class="integration-desc" style="margin-bottom:0;">New client created → Experian PEP check → Companies House check → ID verification request → MLRO alert if flagged</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border);">
+              <span class="badge badge-active">Running</span>
+              <span style="font-size:11px;color:var(--text-dim);display:flex;align-items:center;">24 checks · 2 escalations · 100% HMRC compliant</span>
+            </div>
+          </div>
+          <div class="integration-card" style="flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;gap:16px;padding:4px 0 14px;">
+              <div class="integration-logo">📧</div>
+              <div style="flex:1;">
+                <div class="integration-name">Cold Lead Re-Engagement</div>
+                <div class="integration-desc" style="margin-bottom:0;">Lead inactive 14 days → Personalised AI email → 7 day wait → WhatsApp touchpoint → 30 day → Final outreach or archive</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border);">
+              <span class="badge badge-active">Running</span>
+              <span style="font-size:11px;color:var(--text-dim);display:flex;align-items:center;">68 cold leads · 11 re-engaged · £380K recovered pipeline</span>
+            </div>
+          </div>
+          <div class="integration-card" style="flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;gap:16px;padding:4px 0 14px;">
+              <div class="integration-logo">🏆</div>
+              <div style="flex:1;">
+                <div class="integration-name">Deal Completion Workflow</div>
+                <div class="integration-desc" style="margin-bottom:0;">Offer accepted → Solicitor intro email → Mortgage broker referral → Weekly progress updates → Completion celebration + referral ask</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border);">
+              <span class="badge badge-active">Running</span>
+              <span style="font-size:11px;color:var(--text-dim);display:flex;align-items:center;">7 completions · 4 referrals generated</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- New Lead Modal -->
+<div class="modal-overlay" id="new-lead-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add New Lead</div>
+      <button class="modal-close" onclick="closeModal('new-lead-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-group"><label class="form-label">First Name</label><input class="form-input" placeholder="Khalid"></div>
+        <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" placeholder="Al-Mansouri"></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="khalid@email.com"></div>
+        <div class="form-group"><label class="form-label">Phone / WhatsApp</label><input class="form-input" placeholder="+971 50 xxx xxxx"></div>
+        <div class="form-group"><label class="form-label">Budget</label><input class="form-input" placeholder="£2,500,000"></div>
+        <div class="form-group"><label class="form-label">Market</label><select class="form-input filter-select"><option>🇬🇧 UK</option><option>🇦🇪 UAE</option><option>🇸🇦 KSA</option></select></div>
+        <div class="form-group" style="grid-column:span 2;"><label class="form-label">Property Requirements</label><textarea class="form-input" rows="3" placeholder="Prime Central London, 4+ beds, private garden, parking..."></textarea></div>
+        <div class="form-group"><label class="form-label">Source</label><select class="form-input filter-select"><option>Rightmove</option><option>Zoopla</option><option>Bayut</option><option>WhatsApp</option><option>Referral</option><option>Direct</option></select></div>
+        <div class="form-group"><label class="form-label">Assign Agent</label><select class="form-input filter-select"><option>Alexandra Davies</option><option>James Wilson</option><option>Sophia Reed</option><option>Amira Mansour</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('new-lead-modal')">Cancel</button>
+      <button class="btn btn-secondary" onclick="closeModal('new-lead-modal');showToast('AI qualification started...','info')">Save & Run AI Qualification</button>
+      <button class="btn btn-primary" onclick="closeModal('new-lead-modal');showToast('Lead added successfully!','success')">Add Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Property Modal -->
+<div class="modal-overlay" id="new-property-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Property Listing</div>
+      <button class="modal-close" onclick="closeModal('new-property-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-group" style="grid-column:span 2;"><label class="form-label">Full Address</label><input class="form-input" placeholder="24 Eaton Square, Belgravia, London SW1W 9BL"></div>
+        <div class="form-group"><label class="form-label">Asking Price</label><input class="form-input" placeholder="£3,500,000"></div>
+        <div class="form-group"><label class="form-label">Market</label><select class="form-input filter-select"><option>🇬🇧 UK</option><option>🇦🇪 UAE</option><option>🇸🇦 KSA</option></select></div>
+        <div class="form-group"><label class="form-label">Bedrooms</label><input class="form-input" type="number" placeholder="4"></div>
+        <div class="form-group"><label class="form-label">Bathrooms</label><input class="form-input" type="number" placeholder="3"></div>
+        <div class="form-group"><label class="form-label">Sq Footage</label><input class="form-input" placeholder="2,400"></div>
+        <div class="form-group"><label class="form-label">Property Type</label><select class="form-input filter-select"><option>Townhouse</option><option>Apartment</option><option>Villa</option><option>Penthouse</option><option>Country Estate</option></select></div>
+        <div class="form-group"><label class="form-label">Listing Agent</label><select class="form-input filter-select"><option>Alexandra Davies</option><option>James Wilson</option><option>Sophia Reed</option><option>Amira Mansour</option></select></div>
+        <div class="form-group"><label class="form-label">Status</label><select class="form-input filter-select"><option>Draft</option><option>Live</option><option>Under Offer</option><option>Sold</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('new-property-modal')">Cancel</button>
+      <button class="btn btn-secondary" onclick="closeModal('new-property-modal');navigateTo('listings-ai');showToast('Opening Listing AI...','info')">Save & AI Generate Listing</button>
+      <button class="btn btn-primary" onclick="closeModal('new-property-modal');showToast('Property added!','success')">Add Property</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Client Modal -->
+<div class="modal-overlay" id="new-client-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">New Client Onboarding</div>
+      <button class="modal-close" onclick="closeModal('new-client-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--gold-glow);border:1px solid var(--border-gold);padding:12px 16px;margin-bottom:20px;font-size:12px;color:var(--gold-light);">
+        ⚡ AML/KYC workflow will start automatically once client is created
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-group"><label class="form-label">First Name</label><input class="form-input" placeholder="Mohammed"></div>
+        <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" placeholder="Al-Farsi"></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" placeholder="m.alfarsi@email.ae"></div>
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-input" placeholder="+971 2 xxx xxxx"></div>
+        <div class="form-group"><label class="form-label">Nationality</label><input class="form-input" placeholder="UAE"></div>
+        <div class="form-group"><label class="form-label">Source of Funds</label><select class="form-input filter-select"><option>Employment</option><option>Business Income</option><option>Inheritance</option><option>Investment Returns</option><option>Property Sale</option></select></div>
+        <div class="form-group"><label class="form-label">Client Type</label><select class="form-input filter-select"><option>Individual</option><option>Joint Buyers</option><option>Corporate</option><option>Trust</option></select></div>
+        <div class="form-group"><label class="form-label">Assigned Agent</label><select class="form-input filter-select"><option>James Wilson</option><option>Amira Mansour</option><option>Sophia Reed</option><option>Alexandra Davies</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('new-client-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('new-client-modal');showToast('Client created — AML workflow started','success')">Create Client & Start KYC</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invite Staff Modal -->
+<div class="modal-overlay" id="invite-staff-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Invite Team Member</div>
+      <button class="modal-close" onclick="closeModal('invite-staff-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Email Address</label><input class="form-input" placeholder="newagent@apexai.co.uk"></div>
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" placeholder="First Last"></div>
+      <div class="form-group"><label class="form-label">Role</label>
+        <div class="auth-role-selector" style="grid-template-columns:1fr 1fr 1fr 1fr;">
+          <button class="role-btn" onclick="this.parentElement.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Admin</button>
+          <button class="role-btn active" onclick="this.parentElement.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Sr Agent</button>
+          <button class="role-btn" onclick="this.parentElement.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Jr Agent</button>
+          <button class="role-btn" onclick="this.parentElement.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Viewer</button>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Office</label><select class="form-input filter-select"><option>London HQ</option><option>Dubai Office</option><option>Riyadh Office</option><option>Remote</option></select></div>
+      <div style="background:rgba(29,191,138,0.06);border:1px solid rgba(29,191,138,0.2);padding:12px 16px;font-size:12px;color:var(--emerald);">
+        ✓ 2FA enrollment will be required on first login. Role permissions applied automatically.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('invite-staff-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('invite-staff-modal');showToast('Invitation sent!','success')">Send Invitation</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ═══ AUTH ═══
+let currentRole = 'admin';
+
+function selectRole(btn, role) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentRole = role;
+}
+
+function togglePw() {
+  const inp = document.getElementById('login-pw');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function proceedToTFA() {
+  document.getElementById('login-view').style.display = 'none';
+  document.getElementById('tfa-view').style.display = 'block';
+  setTimeout(() => document.querySelector('.tfa-input').focus(), 100);
+}
+
+function tfa_next(el, idx) {
+  if (el.value.length === 1) {
+    const inputs = document.querySelectorAll('.tfa-input');
+    if (idx < 5) inputs[idx + 1].focus();
+    else doLogin();
+  }
+}
+
+function doLogin() {
+  const authScreen = document.getElementById('auth-screen');
+  const app = document.getElementById('app');
+  const roleMap = {
+    admin: { name: 'Alexandra Davies', role: 'Super Admin', initials: 'AD', leads: 14 },
+    agent: { name: 'James Wilson', role: 'Senior Agent', initials: 'JW', leads: 22 },
+    client: { name: 'Khalid Al-Mansouri', role: 'Client Portal', initials: 'KA', leads: 0 }
+  };
+  const user = roleMap[currentRole];
+  document.getElementById('user-name-display').textContent = user.name;
+  document.getElementById('user-role-display').textContent = user.role;
+  document.getElementById('user-avatar').textContent = user.initials;
+  document.getElementById('sidebar-user-name').textContent = user.name.split(' ')[0] + ' ' + user.name.split(' ')[1]?.[0] + '.';
+  document.getElementById('sidebar-leads').textContent = user.leads;
+
+  authScreen.style.opacity = '0';
+  authScreen.style.transition = 'opacity 0.4s';
+  setTimeout(() => {
+    authScreen.style.display = 'none';
+    app.classList.add('visible');
+    initCharts();
+    addAuditLog();
+    showToast('Welcome back, ' + user.name.split(' ')[0] + '!', 'success');
+  }, 400);
+}
+
+// ═══ NAVIGATION ═══
+function navigateTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const pageEl = document.getElementById('page-' + page);
+  if (pageEl) pageEl.classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + page + "'")) {
+      n.classList.add('active');
+    }
+  });
+
+  if (page === 'analytics') setTimeout(initAnalyticsCharts, 100);
+  document.getElementById('main-content').scrollTop = 0;
+  closeNotif();
+}
+
+// ═══ MODALS ═══
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+document.querySelectorAll('.modal-overlay').forEach(mo => {
+  mo.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+// ═══ NOTIFICATIONS ═══
+function toggleNotif() {
+  const panel = document.getElementById('notif-panel');
+  panel.classList.toggle('open');
+}
+function closeNotif() {
+  document.getElementById('notif-panel').classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.notif-panel') && !e.target.closest('.h-action')) closeNotif();
+});
+
+// ═══ TOAST ═══
+function showToast(msg, type = 'info') {
+  const icons = { success: '✅', error: '❌', info: '⚡' };
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.innerHTML = `<div class="toast-icon">${icons[type]}</div><div class="toast-text">${msg}</div>`;
+  const container = document.getElementById('toast-container');
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100px)'; toast.style.transition = 'all 0.3s'; setTimeout(() => toast.remove(), 300); }, 3500);
+}
+
+// ═══ MISC UI ═══
+function setPeriod(btn) {
+  btn.closest('.chart-period').querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function filterWorkflow(el) {
+  document.querySelectorAll('.workflow-stage').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function settingsNav(el, section) {
+  el.closest('.settings-nav').querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleInt(el) {
+  el.classList.toggle('on');
+}
+
+function openLeadModal(name) {
+  showToast('Opening lead: ' + name, 'info');
+}
+
+function openPropertyModal() {
+  showToast('Opening property details...', 'info');
+}
+
+function openClientModal() {
+  showToast('Opening client profile...', 'info');
+}
+
+function openAITool(tool) {
+  document.getElementById('ai-chat').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const toolNames = { lead: '🎯 Lead Qualifier', listing: '✍️ Listing Generator', contract: '📋 Contract Assistant', aml: '🛡 AML Screener', valuation: '📊 Valuation AI', whatsapp: '💬 WhatsApp Agent' };
+  document.querySelector('.ai-status').innerHTML = `<div class="ai-dot"></div> APEX AI · ${toolNames[tool] || tool}`;
+}
+
+function changeAITool(val) {
+  const toolNames = { lead: '🎯 Lead Qualifier', listing: '✍️ Listing Generator', contract: '📋 Contract Assistant', aml: '🛡 AML Screener', valuation: '📊 Valuation AI' };
+  document.querySelector('.ai-status').innerHTML = `<div class="ai-dot"></div> APEX AI · ${toolNames[val]}`;
+  clearChat();
+  const greetings = {
+    lead: 'Hello! I\'m your Lead Qualifier AI. Share a lead enquiry — I\'ll score it, extract key info, and suggest the next best action.',
+    listing: 'Hello! I\'m your Listing Generator. Tell me about a property and I\'ll create a professional EN/AR listing instantly.',
+    contract: 'Hello! I\'m your Contract Assistant. Share draft terms or paste a clause and I\'ll review it for compliance issues.',
+    aml: 'Hello! I\'m your AML Screener. Enter a client\'s name and nationality to start a PEP and sanctions check.',
+    valuation: 'Hello! I\'m your Valuation AI. Enter a property address and I\'ll generate a market valuation using Land Registry & comparables data.'
+  };
+  addAIMessage('assistant', greetings[val] || greetings.lead);
+}
+
+function clearChat() {
+  document.getElementById('ai-messages').innerHTML = '';
+}
+
+function addAIMessage(role, text) {
+  const msgs = document.getElementById('ai-messages');
+  const div = document.createElement('div');
+  div.className = 'ai-message ' + role;
+  div.innerHTML = `${role === 'assistant' ? '<div class="ai-sender">APEX AI</div>' : ''}<div class="ai-bubble">${text}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+const aiResponses = [
+  '🎯 **Lead Score: 87/100 — HOT**\n\nBased on this enquiry:\n• **Budget**: £2.5M+ (verified intent)\n• **Timeline**: Immediate — moving from Dubai in 60 days\n• **Property**: 4-5 bed, PCL, requires parking & garden\n• **Source**: WhatsApp (high intent channel)\n\n**Recommended Actions:**\n1. Call within 30 minutes — hot lead decay rate is high\n2. Match to: 72 Knightsbridge (£4.2M), 14 Elm Park Gardens (£2.85M)\n3. Send EN + AR property brochures via WhatsApp\n4. Book AML/KYC workflow immediately\n\nAssigning to: James Wilson (Middle East specialist)',
+  'I\'ve searched our portfolio for matching properties:\n\n**Top Matches:**\n• 14 Elm Park Gardens, SW10 — £2.85M, 4 bed, garden ✓\n• 8 Kensington Palace Gardens, W8 — £1.45M, 3 bed\n• 72 Knightsbridge, SW1X — £4.2M, 5 bed, parking ✓\n\nShall I prepare bilingual brochures and WhatsApp them to the client?',
+  '📋 **Contract Review Complete**\n\nI\'ve reviewed the heads of terms. **3 issues flagged:**\n\n⚠️ Clause 4.2: Completion date ambiguous — specify "20 working days"\n⚠️ Clause 7: No mention of chattels list — add or remove reference\n✅ Clause 9: Deposit terms compliant with UK law (10%)\n\nOverall risk: **LOW** — minor amendments recommended before exchange.'
+];
+let aiResIdx = 0;
+
+function sendAIMessage() {
+  const input = document.getElementById('ai-input');
+  const text = input.value.trim();
+  if (!text) return;
+  addAIMessage('user', text);
+  input.value = '';
+
+  setTimeout(() => {
+    addAIMessage('assistant', aiResponses[aiResIdx % aiResponses.length].replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'));
+    aiResIdx++;
+  }, 800);
+}
+
+// ═══ LISTING GENERATOR ═══
+function generateListing() {
+  const address = document.getElementById('listing-address').value || '24 Eaton Square, Belgravia';
+  const price = document.getElementById('listing-price').value || '£3,500,000';
+  const beds = document.getElementById('listing-beds').value || '4';
+  const baths = document.getElementById('listing-baths').value || '3';
+  const sqft = document.getElementById('listing-sqft').value || '2,400';
+
+  const output = document.getElementById('listing-output');
+  output.innerHTML = '<div style="color:var(--gold);font-size:12px;margin-bottom:16px;">⚡ Generating bilingual listing...</div>';
+
+  setTimeout(() => {
+    output.innerHTML = `
+      <div style="margin-bottom:20px;">
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">🇬🇧 English — Rightmove / Zoopla</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--cream);margin-bottom:8px;">An Exceptional Belgravia Townhouse</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.8;">
+          Presenting a magnificently appointed ${beds}-bedroom townhouse in the prestigious heart of Belgravia — one of London's most coveted addresses. Set across ${sqft} sq ft of beautifully curated living space, this remarkable property seamlessly blends period elegance with contemporary luxury.<br><br>
+          The south-facing private garden creates a rare urban sanctuary, while the recently refurbished chef's kitchen and entertaining spaces make this an exceptional family home and an outstanding investment opportunity.
+        </div>
+        <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text-dim);">
+          <span>🛏 ${beds} Bedrooms</span>
+          <span>🚿 ${baths} Bathrooms</span>
+          <span>📐 ${sqft} sq ft</span>
+          <span>🌿 Private Garden</span>
+          <span>🚗 Off-Street Parking</span>
+        </div>
+        <div style="margin-top:10px;font-family:'Playfair Display',serif;font-size:22px;color:var(--gold-light);">${price}</div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:20px;">
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">🇦🇪 Arabic — Bayut / Property Finder</div>
+        <div style="font-family:'Playfair Display',serif;font-size:16px;color:var(--cream);margin-bottom:8px;direction:rtl;text-align:right;">منزل بلغرافيا الاستثنائي</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.8;direction:rtl;text-align:right;">
+          يسرنا أن نقدم لكم هذا المنزل الرائع المؤلف من ${beds} غرف نوم في قلب حي بلغرافيا المرموق — أحد أرقى عناوين لندن. تمتد هذه الإقامة الفاخرة على مساحة ${sqft} قدم مربع من المعيشة الراقية.<br><br>
+          يجمع هذا العقار الاستثنائي بين الأناقة الكلاسيكية والفخامة المعاصرة، مع حديقة خاصة مواجهة للجنوب وموقف سيارات خاص.
+        </div>
+        <div style="margin-top:10px;font-family:'Playfair Display',serif;font-size:22px;color:var(--gold-light);text-align:right;">${price}</div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:16px;">
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">SEO Keywords Generated</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${['Belgravia townhouse for sale','luxury London property','prime central London home','4 bedroom Belgravia','SW1W property','London property investment'].map(k=>`<span style="background:var(--navy-3);border:1px solid var(--border);padding:3px 10px;font-size:10px;color:var(--text-dim);">${k}</span>`).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('copy-listing').style.display = 'inline-flex';
+    document.getElementById('save-listing').style.display = 'inline-flex';
+    showToast('Listing generated in EN + AR!', 'success');
+  }, 1200);
+}
+
+function copyListing() {
+  navigator.clipboard.writeText('Listing copied to clipboard').catch(() => {});
+  showToast('Listing copied to clipboard!', 'success');
+}
+
+// ═══ GLOBAL SEARCH ═══
+function globalSearch(val) {
+  if (val.length > 2) showToast('Searching for: "' + val + '"', 'info');
+}
+
+function toggleUserMenu() {
+  showToast('User menu — coming soon', 'info');
+}
+
+// ═══ AUDIT LOG ═══
+function addAuditLog() {
+  // Simulated periodic audit events
+}
+
+// ═══ CHARTS ═══
+let chartsInited = false;
+
+function initCharts() {
+  if (chartsInited) return;
+  chartsInited = true;
+
+  const chartDefaults = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5E5E5E', font: { family: 'DM Mono', size: 10 } } },
+      y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5E5E5E', font: { family: 'DM Mono', size: 10 } } }
+    }
+  };
+
+  const months = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
+
+  // Revenue chart
+  const rCtx = document.getElementById('revenue-chart');
+  if (rCtx) {
+    new Chart(rCtx, {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [
+          {
+            label: 'Revenue (£K)',
+            data: [22, 28, 34, 38, 42, 48],
+            backgroundColor: 'rgba(155,139,114,0.65)',
+            borderColor: 'rgba(155,139,114,1)',
+            borderWidth: 1,
+            borderRadius: 2,
+          },
+          {
+            label: 'Leads',
+            data: [45, 62, 78, 92, 108, 127],
+            type: 'line',
+            borderColor: '#8A8A8A',
+            backgroundColor: 'rgba(138,138,138,0.08)',
+            pointBackgroundColor: '#8A8A8A',
+            pointRadius: 3,
+            tension: 0.4,
+            fill: true,
+            yAxisID: 'y2'
+          }
+        ]
+      },
+      options: {
+        ...chartDefaults,
+        scales: {
+          ...chartDefaults.scales,
+          y: { ...chartDefaults.scales.y, position: 'left' },
+          y2: { grid: { display: false }, ticks: { color: '#8A8A8A', font: { size: 10 } }, position: 'right' }
+        }
+      }
+    });
+  }
+}
+
+function initAnalyticsCharts() {
+  const marketCtx = document.getElementById('market-chart');
+  const sourceCtx = document.getElementById('source-chart');
+
+  if (marketCtx && !marketCtx.hasAttribute('data-init')) {
+    marketCtx.setAttribute('data-init', '1');
+    new Chart(marketCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['UK — London', 'UAE — Dubai', 'UAE — Abu Dhabi', 'KSA — Riyadh'],
+        datasets: [{ data: [62, 21, 9, 8], backgroundColor: ['#9B8B72', '#6E6558', '#4E4740', '#7A726A'], borderWidth: 0 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#929292', font: { size: 11 } } } } }
+    });
+  }
+
+  if (sourceCtx && !sourceCtx.hasAttribute('data-init')) {
+    sourceCtx.setAttribute('data-init', '1');
+    new Chart(sourceCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Rightmove', 'Zoopla', 'Bayut', 'WhatsApp', 'Referral', 'Direct'],
+        datasets: [{ data: [34, 22, 19, 14, 8, 3], backgroundColor: 'rgba(155,139,114,0.6)', borderRadius: 2 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5E5E5E', font: { size: 10 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5E5E5E', font: { size: 10 } } }
+        }
+      }
+    });
+  }
+}
+
+// Auto-fill TFA for demo
+setTimeout(() => {
+  document.querySelectorAll('.tfa-input').forEach((el, i) => {
+    setTimeout(() => { el.value = String(i + 1); }, i * 80);
+  });
+}, 100);
+</script>
+</body>
+</html>
