@@ -3384,21 +3384,21 @@ tbody tr:last-child td { border-bottom: none; }
     </div>
     <div class="modal-body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-        <div class="form-group" style="grid-column:span 2;"><label class="form-label">Full Address</label><input class="form-input" placeholder="24 Eaton Square, Belgravia, London SW1W 9BL"></div>
-        <div class="form-group"><label class="form-label">Asking Price</label><input class="form-input" placeholder="£3,500,000"></div>
-        <div class="form-group"><label class="form-label">Market</label><select class="form-input filter-select"><option>🇬🇧 UK</option><option>🇦🇪 UAE</option><option>🇸🇦 KSA</option></select></div>
-        <div class="form-group"><label class="form-label">Bedrooms</label><input class="form-input" type="number" placeholder="4"></div>
-        <div class="form-group"><label class="form-label">Bathrooms</label><input class="form-input" type="number" placeholder="3"></div>
-        <div class="form-group"><label class="form-label">Sq Footage</label><input class="form-input" placeholder="2,400"></div>
-        <div class="form-group"><label class="form-label">Property Type</label><select class="form-input filter-select"><option>Townhouse</option><option>Apartment</option><option>Villa</option><option>Penthouse</option><option>Country Estate</option></select></div>
+        <div class="form-group" style="grid-column:span 2;"><label class="form-label">Full Address</label><input class="form-input" id="prop-address" placeholder="24 Eaton Square, Belgravia, London SW1W 9BL"></div>
+        <div class="form-group"><label class="form-label">Asking Price</label><input class="form-input" id="prop-price" placeholder="£3,500,000"></div>
+        <div class="form-group"><label class="form-label">Market</label><select class="form-input filter-select" id="prop-market"><option>🇬🇧 UK</option><option>🇦🇪 UAE</option><option>🇸🇦 KSA</option></select></div>
+        <div class="form-group"><label class="form-label">Bedrooms</label><input class="form-input" type="number" id="prop-beds" placeholder="4"></div>
+        <div class="form-group"><label class="form-label">Bathrooms</label><input class="form-input" type="number" id="prop-baths" placeholder="3"></div>
+        <div class="form-group"><label class="form-label">Sq Footage</label><input class="form-input" id="prop-sqft" placeholder="2,400"></div>
+        <div class="form-group"><label class="form-label">Property Type</label><select class="form-input filter-select" id="prop-type"><option>Townhouse</option><option>Apartment</option><option>Villa</option><option>Penthouse</option><option>Country Estate</option></select></div>
         <div class="form-group"><label class="form-label">Listing Agent</label><select class="form-input filter-select"><option>Alexandra Davies</option><option>James Wilson</option><option>Sophia Reed</option><option>Amira Mansour</option></select></div>
-        <div class="form-group"><label class="form-label">Status</label><select class="form-input filter-select"><option>Draft</option><option>Live</option><option>Under Offer</option><option>Sold</option></select></div>
+        <div class="form-group"><label class="form-label">Status</label><select class="form-input filter-select" id="prop-status"><option>Draft</option><option>Live</option><option>Under Offer</option><option>Sold</option></select></div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('new-property-modal')">Cancel</button>
       <button class="btn btn-secondary" onclick="closeModal('new-property-modal');navigateTo('listings-ai');showToast('Opening Listing AI...','info')">Save & AI Generate Listing</button>
-      <button class="btn btn-primary" onclick="closeModal('new-property-modal');showToast('Property added!','success')">Add Property</button>
+      <button class="btn btn-primary" onclick="saveProperty()">Add Property</button>
     </div>
   </div>
 </div>
@@ -3415,19 +3415,19 @@ tbody tr:last-child td { border-bottom: none; }
         ⚡ AML/KYC workflow will start automatically once client is created
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-        <div class="form-group"><label class="form-label">First Name</label><input class="form-input" placeholder="Mohammed"></div>
-        <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" placeholder="Al-Farsi"></div>
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" placeholder="m.alfarsi@email.ae"></div>
-        <div class="form-group"><label class="form-label">Phone</label><input class="form-input" placeholder="+971 2 xxx xxxx"></div>
-        <div class="form-group"><label class="form-label">Nationality</label><input class="form-input" placeholder="UAE"></div>
-        <div class="form-group"><label class="form-label">Source of Funds</label><select class="form-input filter-select"><option>Employment</option><option>Business Income</option><option>Inheritance</option><option>Investment Returns</option><option>Property Sale</option></select></div>
-        <div class="form-group"><label class="form-label">Client Type</label><select class="form-input filter-select"><option>Individual</option><option>Joint Buyers</option><option>Corporate</option><option>Trust</option></select></div>
+        <div class="form-group"><label class="form-label">First Name</label><input class="form-input" id="client-first" placeholder="Mohammed"></div>
+        <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" id="client-last" placeholder="Al-Farsi"></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="client-email" placeholder="m.alfarsi@email.ae"></div>
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="client-phone" placeholder="+971 2 xxx xxxx"></div>
+        <div class="form-group"><label class="form-label">Nationality</label><input class="form-input" id="client-nationality" placeholder="UAE"></div>
+        <div class="form-group"><label class="form-label">Source of Funds</label><select class="form-input filter-select" id="client-funds"><option>Employment</option><option>Business Income</option><option>Inheritance</option><option>Investment Returns</option><option>Property Sale</option></select></div>
+        <div class="form-group"><label class="form-label">Client Type</label><select class="form-input filter-select" id="client-type"><option>Individual</option><option>Joint Buyers</option><option>Corporate</option><option>Trust</option></select></div>
         <div class="form-group"><label class="form-label">Assigned Agent</label><select class="form-input filter-select"><option>James Wilson</option><option>Amira Mansour</option><option>Sophia Reed</option><option>Alexandra Davies</option></select></div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('new-client-modal')">Cancel</button>
-      <button class="btn btn-primary" onclick="closeModal('new-client-modal');showToast('Client created — AML workflow started','success')">Create Client & Start KYC</button>
+      <button class="btn btn-primary" onclick="saveClient()">Create Client & Start KYC</button>
     </div>
   </div>
 </div>
@@ -3545,6 +3545,62 @@ async function saveLead() {
   document.getElementById('lead-email').value = '';
   document.getElementById('lead-phone').value = '';
   document.getElementById('lead-budget').value = '';
+}
+
+// ═══ PROPERTIES ═══
+async function saveProperty() {
+  const address = document.getElementById('prop-address').value.trim();
+  const price = document.getElementById('prop-price').value.trim();
+  const market = document.getElementById('prop-market').value;
+  const bedrooms = document.getElementById('prop-beds').value;
+  const bathrooms = document.getElementById('prop-baths').value;
+  const sqft = document.getElementById('prop-sqft').value.trim();
+  const type = document.getElementById('prop-type').value;
+  const status = document.getElementById('prop-status').value;
+
+  if (!address) { showToast('Please enter an address', 'error'); return; }
+
+  const { error } = await apexDB.from('properties').insert([{
+    address, price, market, bedrooms, bathrooms, sqft, type, status
+  }]);
+
+  if (error) { showToast('Failed to save property: ' + error.message, 'error'); return; }
+
+  closeModal('new-property-modal');
+  showToast('Property added!', 'success');
+  document.getElementById('prop-address').value = '';
+  document.getElementById('prop-price').value = '';
+  document.getElementById('prop-beds').value = '';
+  document.getElementById('prop-baths').value = '';
+  document.getElementById('prop-sqft').value = '';
+}
+
+// ═══ CLIENTS ═══
+async function saveClient() {
+  const first = document.getElementById('client-first').value.trim();
+  const last = document.getElementById('client-last').value.trim();
+  const email = document.getElementById('client-email').value.trim();
+  const phone = document.getElementById('client-phone').value.trim();
+  const nationality = document.getElementById('client-nationality').value.trim();
+  const source_of_funds = document.getElementById('client-funds').value;
+  const client_type = document.getElementById('client-type').value;
+
+  if (!first || !last) { showToast('Please enter a name', 'error'); return; }
+
+  const { error } = await apexDB.from('clients').insert([{
+    name: first + ' ' + last,
+    email, phone, nationality, source_of_funds, client_type
+  }]);
+
+  if (error) { showToast('Failed to save client: ' + error.message, 'error'); return; }
+
+  closeModal('new-client-modal');
+  showToast('Client created — AML workflow started', 'success');
+  document.getElementById('client-first').value = '';
+  document.getElementById('client-last').value = '';
+  document.getElementById('client-email').value = '';
+  document.getElementById('client-phone').value = '';
+  document.getElementById('client-nationality').value = '';
 }
 
 // ═══ NAVIGATION ═══
