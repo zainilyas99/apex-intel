@@ -203,6 +203,36 @@ html, body {
 
 
 /* ── APP LAYOUT ── */
+/* ── CLIENT PORTAL ── */
+.client-nav {
+  display: flex; gap: 0; background: var(--navy-2); border-bottom: 1px solid var(--border);
+  padding: 0 24px; height: var(--header-h); align-items: stretch;
+}
+.client-nav-item {
+  padding: 0 20px; display: flex; align-items: center; font-size: 13px;
+  color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s; white-space: nowrap;
+}
+.client-nav-item:hover { color: var(--text-bright); }
+.client-nav-item.active { color: var(--gold); border-bottom-color: var(--gold); }
+.client-content { padding: 32px; max-width: 1100px; margin: 0 auto; overflow-y: auto; flex: 1; }
+.client-page { display: none; }
+.client-page.active { display: block; }
+
+.journey-bar { display: flex; align-items: center; justify-content: center; padding: 24px 0; }
+.journey-step { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.journey-dot {
+  width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; border: 2px solid var(--border); color: var(--text-dim); background: var(--navy-3);
+}
+.journey-step.completed .journey-dot { background: var(--gold-glow); border-color: var(--gold); color: var(--gold); }
+.journey-step.active .journey-dot { background: var(--gold); border-color: var(--gold); color: var(--navy-1); }
+.journey-label { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+.journey-step.completed .journey-label, .journey-step.active .journey-label { color: var(--cream); }
+.journey-line { flex: 1; height: 2px; background: var(--border); min-width: 24px; max-width: 60px; margin: 0 4px; margin-bottom: 20px; }
+.journey-line.completed { background: var(--gold); }
+.journey-line.active { background: linear-gradient(90deg, var(--gold), var(--border)); }
+
 #app {
   display: none;
   height: 100vh;
@@ -1477,60 +1507,60 @@ tbody tr:last-child td { border-bottom: none; }
   <div class="app-body">
 
     <!-- SIDEBAR -->
-    <nav class="sidebar">
+    <nav class="sidebar" id="main-sidebar">
       <div class="sidebar-section">
         <div class="sidebar-section-label">Main</div>
-        <div class="nav-item active" onclick="navigateTo('dashboard')">
+        <div class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
           <span class="nav-icon">⊞</span> Dashboard
         </div>
-        <div class="nav-item" onclick="navigateTo('leads')">
+        <div class="nav-item" data-page="leads" onclick="navigateTo('leads')">
           <span class="nav-icon">◈</span> Lead Pipeline
           <span class="nav-badge">14</span>
         </div>
-        <div class="nav-item" onclick="navigateTo('properties')">
+        <div class="nav-item" data-page="properties" onclick="navigateTo('properties')">
           <span class="nav-icon">⌂</span> Properties
         </div>
-        <div class="nav-item" onclick="navigateTo('clients')">
+        <div class="nav-item" data-page="clients" onclick="navigateTo('clients')">
           <span class="nav-icon">◇</span> Clients
         </div>
       </div>
 
       <div class="sidebar-section">
         <div class="sidebar-section-label">AI Suite</div>
-        <div class="nav-item" onclick="navigateTo('ai-tools')">
+        <div class="nav-item" data-page="ai-tools" onclick="navigateTo('ai-tools')">
           <span class="nav-icon">⚡</span> AI Tools
         </div>
-        <div class="nav-item" onclick="navigateTo('workflows')">
+        <div class="nav-item" data-page="workflows" onclick="navigateTo('workflows')">
           <span class="nav-icon">⟳</span> Automation
         </div>
-        <div class="nav-item" onclick="navigateTo('listings-ai')">
+        <div class="nav-item" data-page="listings-ai" onclick="navigateTo('listings-ai')">
           <span class="nav-icon">✦</span> Listing AI
         </div>
       </div>
 
       <div class="sidebar-section">
         <div class="sidebar-section-label">Management</div>
-        <div class="nav-item" onclick="navigateTo('staff')">
+        <div class="nav-item" data-page="staff" onclick="navigateTo('staff')">
           <span class="nav-icon">⊙</span> Staff & Roles
         </div>
-        <div class="nav-item" onclick="navigateTo('integrations')">
+        <div class="nav-item" data-page="integrations" onclick="navigateTo('integrations')">
           <span class="nav-icon">⊕</span> Integrations
         </div>
-        <div class="nav-item" onclick="navigateTo('security')">
+        <div class="nav-item" data-page="security" onclick="navigateTo('security')">
           <span class="nav-icon">🛡</span> Security
           <span class="nav-badge" style="background:var(--amber-dim);color:var(--amber);">!</span>
         </div>
-        <div class="nav-item" onclick="navigateTo('settings')">
+        <div class="nav-item" data-page="settings" onclick="navigateTo('settings')">
           <span class="nav-icon">⚙</span> Settings
         </div>
       </div>
 
       <div class="sidebar-section">
         <div class="sidebar-section-label">Reports</div>
-        <div class="nav-item" onclick="navigateTo('analytics')">
+        <div class="nav-item" data-page="analytics" onclick="navigateTo('analytics')">
           <span class="nav-icon">▲</span> Analytics
         </div>
-        <div class="nav-item" onclick="navigateTo('compliance')">
+        <div class="nav-item" data-page="compliance" onclick="navigateTo('compliance')">
           <span class="nav-icon">⊘</span> Compliance
         </div>
       </div>
@@ -1755,6 +1785,43 @@ tbody tr:last-child td { border-bottom: none; }
 
       <!-- ═══ LEADS PAGE ═══ -->
       <div class="page" id="page-leads">
+        <!-- Agent KPI Cards (shown for agent role only) -->
+        <div id="agent-kpis" style="display:none;margin-bottom:20px;">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-label">My Active Leads</div>
+                <div class="kpi-icon" style="background:rgba(155,139,114,0.08);color:var(--text-bright);">◈</div>
+              </div>
+              <div class="kpi-value">22</div>
+              <div class="kpi-delta up">↑ 4 new this week</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-label">My Viewings This Week</div>
+                <div class="kpi-icon" style="background:rgba(155,139,114,0.08);color:var(--text-bright);">📅</div>
+              </div>
+              <div class="kpi-value">8</div>
+              <div class="kpi-delta up">↑ 3 more than last week</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-label">My Conversion Rate</div>
+                <div class="kpi-icon" style="background:var(--emerald-dim);color:var(--emerald);">%</div>
+              </div>
+              <div class="kpi-value">38.2%</div>
+              <div class="kpi-delta up">↑ 2.1% improvement</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-label">My Pipeline Value</div>
+                <div class="kpi-icon" style="background:var(--gold-glow);color:var(--gold);">⬡</div>
+              </div>
+              <div class="kpi-value">£1.82M</div>
+              <div class="kpi-delta up">↑ £240K vs prev</div>
+            </div>
+          </div>
+        </div>
         <div class="page-header">
           <div class="page-title-group">
             <div class="page-eyebrow">CRM · Pipeline</div>
@@ -3343,6 +3410,137 @@ tbody tr:last-child td { border-bottom: none; }
 
     </main>
   </div>
+
+  <!-- ═══ CLIENT PORTAL ═══ -->
+  <div id="client-portal" style="display:none;">
+    <nav class="client-nav">
+      <div class="client-nav-item active" onclick="clientNav('search')">⌂ My Property Search</div>
+      <div class="client-nav-item" onclick="clientNav('viewings')">📅 My Viewings</div>
+      <div class="client-nav-item" onclick="clientNav('journey')">◈ My Journey</div>
+      <div class="client-nav-item" onclick="clientNav('documents')">📄 My Documents</div>
+      <div class="client-nav-item" onclick="clientNav('agent')">◇ My Agent</div>
+    </nav>
+    <div class="client-content">
+
+      <!-- My Property Search -->
+      <div class="client-page active" id="client-search">
+        <h2 class="page-title" style="margin-bottom:20px;">My Property Search</h2>
+        <div class="page-subtitle" style="margin-bottom:24px;">Properties matched to your preferences</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;">
+          <div class="card" style="padding:0;overflow:hidden;">
+            <div style="height:160px;background:linear-gradient(135deg,var(--navy-3),var(--navy-2));display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:40px;">⌂</div>
+            <div style="padding:16px;">
+              <div style="font-weight:500;color:var(--cream);margin-bottom:4px;">24 Eaton Square, Belgravia</div>
+              <div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">4 bed · 3 bath · 2,400 sqft</div>
+              <div style="font-size:16px;color:var(--gold);font-family:'DM Mono',monospace;">£3,500,000</div>
+            </div>
+          </div>
+          <div class="card" style="padding:0;overflow:hidden;">
+            <div style="height:160px;background:linear-gradient(135deg,var(--navy-3),var(--navy-2));display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:40px;">⌂</div>
+            <div style="padding:16px;">
+              <div style="font-weight:500;color:var(--cream);margin-bottom:4px;">72 Knightsbridge, London</div>
+              <div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">5 bed · 4 bath · 3,800 sqft</div>
+              <div style="font-size:16px;color:var(--gold);font-family:'DM Mono',monospace;">£4,200,000</div>
+            </div>
+          </div>
+          <div class="card" style="padding:0;overflow:hidden;">
+            <div style="height:160px;background:linear-gradient(135deg,var(--navy-3),var(--navy-2));display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:40px;">⌂</div>
+            <div style="padding:16px;">
+              <div style="font-weight:500;color:var(--cream);margin-bottom:4px;">15 Chester Terrace, Regent's Park</div>
+              <div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">6 bed · 5 bath · 4,200 sqft</div>
+              <div style="font-size:16px;color:var(--gold);font-family:'DM Mono',monospace;">£5,750,000</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Viewings -->
+      <div class="client-page" id="client-viewings">
+        <h2 class="page-title" style="margin-bottom:20px;">My Viewings</h2>
+        <div class="page-subtitle" style="margin-bottom:24px;">Upcoming property viewings</div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Time</th><th>Property</th><th>Agent</th></tr></thead>
+            <tbody>
+              <tr><td>12 Apr 2025</td><td>10:30 AM</td><td>24 Eaton Square, Belgravia</td><td>James Wilson</td></tr>
+              <tr><td>14 Apr 2025</td><td>2:00 PM</td><td>72 Knightsbridge, London</td><td>James Wilson</td></tr>
+              <tr><td>18 Apr 2025</td><td>11:00 AM</td><td>15 Chester Terrace, Regent's Park</td><td>Sophia Reed</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- My Journey -->
+      <div class="client-page" id="client-journey">
+        <h2 class="page-title" style="margin-bottom:20px;">My Journey</h2>
+        <div class="page-subtitle" style="margin-bottom:24px;">Your property purchase progress</div>
+        <div class="card">
+          <div class="journey-bar">
+            <div class="journey-step completed"><div class="journey-dot">✓</div><div class="journey-label">Registration</div></div>
+            <div class="journey-line completed"></div>
+            <div class="journey-step completed"><div class="journey-dot">✓</div><div class="journey-label">KYC / AML</div></div>
+            <div class="journey-line completed"></div>
+            <div class="journey-step completed"><div class="journey-dot">✓</div><div class="journey-label">Search Brief</div></div>
+            <div class="journey-line active"></div>
+            <div class="journey-step active"><div class="journey-dot">4</div><div class="journey-label">Viewings</div></div>
+            <div class="journey-line"></div>
+            <div class="journey-step"><div class="journey-dot">5</div><div class="journey-label">Offer</div></div>
+            <div class="journey-line"></div>
+            <div class="journey-step"><div class="journey-dot">6</div><div class="journey-label">Legal</div></div>
+            <div class="journey-line"></div>
+            <div class="journey-step"><div class="journey-dot">7</div><div class="journey-label">Completion</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Documents -->
+      <div class="client-page" id="client-documents">
+        <h2 class="page-title" style="margin-bottom:20px;">My Documents</h2>
+        <div class="page-subtitle" style="margin-bottom:24px;">Contracts, offers and correspondence</div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Document</th><th>Type</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Terms of Engagement</td><td>Contract</td><td>28 Mar 2025</td><td><span class="status-badge status-active">Signed</span></td></tr>
+              <tr><td>AML Declaration</td><td>Compliance</td><td>28 Mar 2025</td><td><span class="status-badge status-active">Completed</span></td></tr>
+              <tr><td>Search Brief — PCL</td><td>Brief</td><td>30 Mar 2025</td><td><span class="status-badge status-active">Confirmed</span></td></tr>
+              <tr><td>Viewing Feedback — Eaton Sq</td><td>Report</td><td>Pending</td><td><span class="status-badge status-pending">Awaiting</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- My Agent -->
+      <div class="client-page" id="client-agent">
+        <h2 class="page-title" style="margin-bottom:20px;">My Agent</h2>
+        <div class="page-subtitle" style="margin-bottom:24px;">Your dedicated property consultant</div>
+        <div class="card" style="max-width:400px;">
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+            <div style="width:64px;height:64px;border-radius:50%;background:var(--gold-glow);border:2px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--gold);font-weight:600;">JW</div>
+            <div>
+              <div style="font-size:18px;font-weight:500;color:var(--cream);">James Wilson</div>
+              <div style="font-size:13px;color:var(--text-dim);">Senior Property Consultant</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+              <span style="color:var(--text-dim);font-size:13px;">Email</span>
+              <span style="color:var(--cream);font-size:13px;">j.wilson@apexai.co.uk</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+              <span style="color:var(--text-dim);font-size:13px;">Phone</span>
+              <span style="color:var(--cream);font-size:13px;">+44 20 7946 0123</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;">
+              <span style="color:var(--text-dim);font-size:13px;">Availability</span>
+              <span style="color:var(--emerald);font-size:13px;">● Available now</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -3496,9 +3694,82 @@ async function doLogin() {
   const { data, error } = await apexDB.auth.signInWithPassword({ email, password });
   if (error) { showToast('Invalid email or password', 'error'); return; }
   document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app').classList.add('visible');
-  initCharts();
+  applyRole(currentRole);
   showToast('Welcome back!', 'success');
+}
+
+function applyRole(role) {
+  const app = document.getElementById('app');
+  const sidebar = document.getElementById('main-sidebar');
+  const appBody = document.querySelector('.app-body');
+  const clientPortal = document.getElementById('client-portal');
+  const header = document.querySelector('.app-header');
+
+  if (role === 'client') {
+    // Client: hide sidebar + main content, show client portal
+    app.classList.add('visible');
+    sidebar.style.display = 'none';
+    appBody.querySelector('.main-content').style.display = 'none';
+    clientPortal.style.display = 'flex';
+    clientPortal.style.flexDirection = 'column';
+    clientPortal.style.flex = '1';
+    clientPortal.style.overflow = 'hidden';
+    // Hide header actions not relevant to clients
+    document.querySelectorAll('.h-action').forEach(function(btn) {
+      if (!btn.title || btn.title === 'AI Assistant' || btn.title === 'Settings') btn.style.display = 'none';
+    });
+    clientNav('search');
+    return;
+  }
+
+  // Admin & Agent: show normal app
+  app.classList.add('visible');
+  sidebar.style.display = '';
+  appBody.querySelector('.main-content').style.display = '';
+  clientPortal.style.display = 'none';
+
+  const agentHidden = ['dashboard', 'analytics', 'compliance', 'security', 'settings', 'staff'];
+
+  // Show/hide sidebar nav items
+  document.querySelectorAll('.nav-item[data-page]').forEach(function(item) {
+    if (role === 'agent' && agentHidden.includes(item.dataset.page)) {
+      item.style.display = 'none';
+    } else {
+      item.style.display = '';
+    }
+  });
+
+  // Hide section labels if all items in section are hidden
+  document.querySelectorAll('.sidebar-section').forEach(function(section) {
+    var items = section.querySelectorAll('.nav-item[data-page]');
+    if (items.length === 0) return;
+    var allHidden = true;
+    items.forEach(function(i) { if (i.style.display !== 'none') allHidden = false; });
+    section.style.display = allHidden ? 'none' : '';
+  });
+
+  // Agent KPIs
+  var agentKpis = document.getElementById('agent-kpis');
+  if (agentKpis) agentKpis.style.display = role === 'agent' ? '' : 'none';
+
+  // Navigate to correct landing page
+  if (role === 'agent') {
+    navigateTo('leads');
+  } else {
+    navigateTo('dashboard');
+  }
+
+  initCharts();
+}
+
+function clientNav(section) {
+  document.querySelectorAll('.client-page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.client-nav-item').forEach(function(n) { n.classList.remove('active'); });
+  var page = document.getElementById('client-' + section);
+  if (page) page.classList.add('active');
+  document.querySelectorAll('.client-nav-item').forEach(function(n) {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + section + "'")) n.classList.add('active');
+  });
 }
 
 // ═══ LEADS ═══
