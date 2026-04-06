@@ -3356,21 +3356,21 @@ tbody tr:last-child td { border-bottom: none; }
     </div>
     <div class="modal-body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-        <div class="form-group"><label class="form-label">First Name</label><input class="form-input" placeholder="Khalid"></div>
-        <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" placeholder="Al-Mansouri"></div>
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="khalid@email.com"></div>
-        <div class="form-group"><label class="form-label">Phone / WhatsApp</label><input class="form-input" placeholder="+971 50 xxx xxxx"></div>
-        <div class="form-group"><label class="form-label">Budget</label><input class="form-input" placeholder="£2,500,000"></div>
-        <div class="form-group"><label class="form-label">Market</label><select class="form-input filter-select"><option>🇬🇧 UK</option><option>🇦🇪 UAE</option><option>🇸🇦 KSA</option></select></div>
+        <div class="form-group"><label class="form-label">First Name</label><input class="form-input" id="lead-first" placeholder="Khalid"></div>
+        <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" id="lead-last" placeholder="Al-Mansouri"></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="lead-email" placeholder="khalid@email.com"></div>
+        <div class="form-group"><label class="form-label">Phone / WhatsApp</label><input class="form-input" id="lead-phone" placeholder="+971 50 xxx xxxx"></div>
+        <div class="form-group"><label class="form-label">Budget</label><input class="form-input" id="lead-budget" placeholder="£2,500,000"></div>
+        <div class="form-group"><label class="form-label">Market</label><select class="form-input filter-select" id="lead-market"><option>🇬🇧 UK</option><option>🇦🇪 UAE</option><option>🇸🇦 KSA</option></select></div>
         <div class="form-group" style="grid-column:span 2;"><label class="form-label">Property Requirements</label><textarea class="form-input" rows="3" placeholder="Prime Central London, 4+ beds, private garden, parking..."></textarea></div>
-        <div class="form-group"><label class="form-label">Source</label><select class="form-input filter-select"><option>Rightmove</option><option>Zoopla</option><option>Bayut</option><option>WhatsApp</option><option>Referral</option><option>Direct</option></select></div>
+        <div class="form-group"><label class="form-label">Source</label><select class="form-input filter-select" id="lead-source"><option>Rightmove</option><option>Zoopla</option><option>Bayut</option><option>WhatsApp</option><option>Referral</option><option>Direct</option></select></div>
         <div class="form-group"><label class="form-label">Assign Agent</label><select class="form-input filter-select"><option>Alexandra Davies</option><option>James Wilson</option><option>Sophia Reed</option><option>Amira Mansour</option></select></div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('new-lead-modal')">Cancel</button>
       <button class="btn btn-secondary" onclick="closeModal('new-lead-modal');showToast('AI qualification started...','info')">Save & Run AI Qualification</button>
-      <button class="btn btn-primary" onclick="closeModal('new-lead-modal');showToast('Lead added successfully!','success')">Add Lead</button>
+      <button class="btn btn-primary" onclick="saveLead()">Add Lead</button>
     </div>
   </div>
 </div>
@@ -3499,6 +3499,52 @@ async function doLogin() {
   document.getElementById('app').classList.add('visible');
   initCharts();
   showToast('Welcome back!', 'success');
+}
+
+// ═══ LEADS ═══
+async function saveLead() {
+  const first = document.getElementById('lead-first').value.trim();
+  const last = document.getElementById('lead-last').value.trim();
+  const email = document.getElementById('lead-email').value.trim();
+  const phone = document.getElementById('lead-phone').value.trim();
+  const budget = document.getElementById('lead-budget').value.trim();
+  const market = document.getElementById('lead-market').value;
+  const source = document.getElementById('lead-source').value;
+
+  if (!first || !last) { showToast('Please enter a name', 'error'); return; }
+
+  const { data, error } = await apexDB.from('leads').insert([{
+    name: first + ' ' + last,
+    email: email,
+    phone: phone,
+    budget: budget,
+    market: market,
+    source: source
+  }]).select();
+
+  if (error) { showToast('Failed to save lead: ' + error.message, 'error'); return; }
+
+  closeModal('new-lead-modal');
+  showToast('Lead added successfully!', 'success');
+
+  // Add lead card to the pipeline
+  const col = document.querySelector('.pipeline-col:first-child .pipeline-cards') || document.querySelector('.pipeline-cards');
+  if (col && data && data[0]) {
+    const lead = data[0];
+    const card = document.createElement('div');
+    card.className = 'lead-card';
+    card.innerHTML = '<div class="lead-name">' + lead.name + '</div>' +
+      '<div class="lead-meta">' + lead.source + ' · ' + lead.market + '</div>' +
+      '<div class="lead-meta">' + lead.budget + '</div>';
+    col.prepend(card);
+  }
+
+  // Clear form
+  document.getElementById('lead-first').value = '';
+  document.getElementById('lead-last').value = '';
+  document.getElementById('lead-email').value = '';
+  document.getElementById('lead-phone').value = '';
+  document.getElementById('lead-budget').value = '';
 }
 
 // ═══ NAVIGATION ═══
